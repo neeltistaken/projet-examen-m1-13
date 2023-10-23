@@ -1,5 +1,13 @@
 node_modules/
+
+# npm lock file
 package-lock.json
+# pnpm (better package manager) lock file
+pnpm-lock.yaml
+
+# jetbrains IDE config
+.idea/
+
 dist/
 coverage/
 .next/
