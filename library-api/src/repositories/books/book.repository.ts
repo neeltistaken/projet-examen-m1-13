@@ -23,7 +23,7 @@ export class BookRepository extends Repository<Book> {
    */
   public async getAllPlain(): Promise<PlainBookRepositoryOutput[]> {
     const books = await this.find({
-      relations: { bookGenres: { genre: true } },
+      relations: { author: true, bookGenres: { genre: true } },
     });
 
     return books.map(adaptBookEntityToPlainBookModel);
@@ -36,7 +36,10 @@ export class BookRepository extends Repository<Book> {
    * @throws 404: book with this ID was not found
    */
   public async getById(id: BookId): Promise<BookRepositoryOutput> {
-    const book = await this.findOne({ where: { id } });
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
