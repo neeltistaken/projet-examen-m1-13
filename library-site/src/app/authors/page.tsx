@@ -3,6 +3,7 @@
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import axios from 'axios';
 import { PlainAuthorModel } from '../../models/author.model';
+import Navbar from "@/app/NavBar";
 
 const AuthorsPage: FC = () => {
   // Initialisation de l'état des auteurs à un tableau vide
@@ -48,6 +49,7 @@ const AuthorsPage: FC = () => {
 
     return (
       <div>
+        <Navbar current_page="Auteurs" />
         <h1>Liste des auteurs</h1>
         <ul>
           {authors.map((author) => (
