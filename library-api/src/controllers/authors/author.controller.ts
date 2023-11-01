@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
 import { AuthorId } from 'library-api/src/entities';
@@ -44,5 +44,23 @@ export class AuthorController {
     );
 
     return PlainAuthorPresenter.from(author);
+  }
+
+  @Put('/:id/update')
+  @ApiOperation({ summary: 'Update an author' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'firstName', type: 'string' })
+  @ApiParam({ name: 'lastName', type: 'string' })
+  @ApiParam({ name: 'photoUrl', type: 'string' })
+  public async update(
+    @Param('id') id: AuthorId,
+    @Query() query,
+  ): Promise<PlainAuthorPresenter> {
+    const { firstName, lastName, photoUrl } = query;
+
+    return PlainAuthorPresenter.from(
+      await this.authorUseCases.update(id, firstName, lastName, photoUrl),
+    );
   }
 }

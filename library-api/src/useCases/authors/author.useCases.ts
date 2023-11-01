@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MissingParamError } from 'library-api/src/common/errors';
 import { AuthorId } from 'library-api/src/entities';
 import { AuthorRepository } from 'library-api/src/repositories';
 import { PlainAuthorUseCasesOutput } from 'library-api/src/useCases/authors/author.useCases.type';
@@ -50,6 +51,33 @@ export class AuthorUseCases {
     author.firstName = firstName;
     author.lastName = lastName;
     author.photoUrl = photoUrl;
+    return this.authorRepository.save(author);
+  }
+
+  /**
+   * Update an author
+   * @param id Author's ID
+   * @param firstName Author's first name
+   * @param lastName Author's last name
+   * @param photoUrl Author's photo URL
+   * @returns Updated author
+   * @throws 404: author with this ID was not found
+   */
+  public async update(
+    id: AuthorId,
+    firstName: string,
+    lastName: string,
+    photoUrl: string,
+  ): Promise<PlainAuthorUseCasesOutput> {
+    if (!id || !firstName || !lastName || !photoUrl) {
+      throw new MissingParamError('id, firstName, lastName or photoUrl');
+    }
+
+    const author = await this.getById(id); // Get author by ID
+    author.firstName = firstName;
+    author.lastName = lastName;
+    author.photoUrl = photoUrl;
+
     return this.authorRepository.save(author);
   }
 }
