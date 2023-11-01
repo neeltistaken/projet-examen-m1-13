@@ -24,4 +24,32 @@ export class AuthorUseCases {
   public async getById(id: AuthorId): Promise<PlainAuthorUseCasesOutput> {
     return this.authorRepository.getById(id);
   }
+
+  /**
+   * Create an empty author
+   * @returns Empty author
+   */
+  public async createEmpty(): Promise<PlainAuthorUseCasesOutput> {
+    return this.authorRepository.createEmpty();
+  }
+
+  /**
+   * Create an author
+   * @param firstName Author's first name
+   * @param lastName Author's last name
+   * @param photoUrl Author's photo URL
+   * @returns Created author
+   */
+  public async create(
+    firstName: string,
+    lastName: string,
+    photoUrl: string,
+  ): Promise<PlainAuthorUseCasesOutput> {
+    const author = await this.authorRepository.createEmpty(); // Create an empty author
+
+    author.firstName = firstName;
+    author.lastName = lastName;
+    author.photoUrl = photoUrl;
+    return this.authorRepository.save(author);
+  }
 }

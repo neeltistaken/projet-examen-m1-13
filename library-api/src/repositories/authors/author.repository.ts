@@ -28,4 +28,12 @@ export class AuthorRepository extends Repository<Author> {
 
     return author;
   }
+
+  public async createEmpty(): Promise<Author> {
+    const newAuthor = new Author();
+    newAuthor.firstName = '';
+    newAuthor.lastName = '';
+    newAuthor.photoUrl = 'https://placehold.co/300';
+    return this.save(newAuthor);
+  }
 }
