@@ -11,11 +11,16 @@ export class AuthorRepository extends Repository<Author> {
   }
 
   public async getAllPlain(): Promise<Author[]> {
-    return this.find();
+    return this.createQueryBuilder('author')
+      .leftJoinAndSelect('author.books', 'book')
+      .getMany();
   }
 
   public async getById(id: AuthorId): Promise<PlainAuthorRepositoryOutput> {
-    const author = await this.findOne({ where: { id } });
+    const author = await this.createQueryBuilder('author')
+      .leftJoinAndSelect('author.books', 'book')
+      .where('author.id = :id', { id })
+      .getOne();
 
     if (!author) {
       throw new NotFoundError(`Author - '${id}'`);
