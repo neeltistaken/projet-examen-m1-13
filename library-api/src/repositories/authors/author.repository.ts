@@ -16,6 +16,11 @@ export class AuthorRepository extends Repository<Author> {
       .getMany();
   }
 
+  /**
+   * Get an author by its ID
+   * @param id Author's ID
+   * @returns Author if found
+   */
   public async getById(id: AuthorId): Promise<PlainAuthorRepositoryOutput> {
     const author = await this.createQueryBuilder('author')
       .leftJoinAndSelect('author.books', 'book')
