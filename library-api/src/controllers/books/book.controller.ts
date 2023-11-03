@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
   ApiOperation,
@@ -34,6 +34,34 @@ export class BookController {
   @ApiNotFoundResponse({ description: 'Book not found' })
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
+
+    return BookPresenter.from(book);
+  }
+
+  @Post('/')
+  @ApiOperation({ summary: 'Create a book' })
+  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiParam({ name: 'title', type: 'string' })
+  @ApiParam({ name: 'authorId', type: 'string' })
+  public async create(@Query() query): Promise<BookPresenter> {
+    const { title, authorId } = query;
+    const book = await this.bookUseCases.create(title, authorId);
+
+    return BookPresenter.from(book);
+  }
+
+  @Put('/:id/')
+  @ApiOperation({ summary: 'Update a book' })
+  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'title', type: 'string' })
+  @ApiParam({ name: 'authorId', type: 'string' })
+  public async update(
+    @Param('id') id: BookId,
+    @Query() query,
+  ): Promise<BookPresenter> {
+    const { title, authorId } = query;
+    const book = await this.bookUseCases.update(id, title, authorId);
 
     return BookPresenter.from(book);
   }
