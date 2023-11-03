@@ -76,4 +76,17 @@ export class BookUseCases {
 
     return this.bookRepository.updateBook(id, title, authorId);
   }
+
+  /**
+   * Delete a book
+   * @param id Book's ID
+   * @returns Deleted book
+   */
+  public async delete(id: BookId): Promise<BookUseCasesOutput> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    return this.bookRepository.deleteBook(id);
+  }
 }

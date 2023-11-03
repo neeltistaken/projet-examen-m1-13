@@ -81,4 +81,17 @@ export class BookRepository extends Repository<Book> {
 
     return this.getById(id);
   }
+
+  /**
+   * Delete a book
+   * @param id Book's ID
+   * @returns Deleted book
+   */
+  public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
+    const book = await this.getById(id);
+
+    await this.delete(id);
+
+    return book;
+  }
 }

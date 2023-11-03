@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import {
   ApiAcceptedResponse,
   ApiOperation,
@@ -62,6 +70,16 @@ export class BookController {
   ): Promise<BookPresenter> {
     const { title, authorId } = query;
     const book = await this.bookUseCases.update(id, title, authorId);
+
+    return BookPresenter.from(book);
+  }
+
+  @Delete('/:id/')
+  @ApiOperation({ summary: 'Delete a book' })
+  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  public async delete(@Param('id') id: BookId): Promise<BookPresenter> {
+    const book = await this.bookUseCases.delete(id);
 
     return BookPresenter.from(book);
   }
