@@ -80,4 +80,10 @@ export class AuthorUseCases {
 
     return this.authorRepository.save(author);
   }
+
+  public async delete(id: AuthorId): Promise<PlainAuthorUseCasesOutput> {
+    const author = await this.getById(id); // Get author by ID
+    this.authorRepository.deleteById(id); // Delete author by ID
+    return author;
+  }
 }

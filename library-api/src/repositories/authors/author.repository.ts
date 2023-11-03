@@ -41,4 +41,9 @@ export class AuthorRepository extends Repository<Author> {
     newAuthor.photoUrl = 'https://placehold.co/300';
     return this.save(newAuthor);
   }
+
+  public async deleteById(id: AuthorId): Promise<void> {
+    await this.delete(id);
+    return Promise.resolve();
+  }
 }
