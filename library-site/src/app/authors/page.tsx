@@ -1,72 +1,55 @@
 'use client';
-
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { PlainAuthorModel } from '../../models/author.model';
 import Navbar from "@/app/NavBar";
 
 const AuthorsPage: FC = () => {
-  // Initialisation de l'état des auteurs à un tableau vide
   const [authors, setAuthors] = useState<PlainAuthorModel[]>([]);
-
-  // Initialisation de l'état de chargement à false
   const [loading, setLoading] = useState(false);
-
-  // Initialisation de l'état d'erreur à null
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Définir l'état de chargement à true avant de faire l'appel à l'API
     setLoading(true);
 
     axios
       .get('http://localhost:3001/authors')
       .then((response) => {
-        // Mettre à jour l'état des auteurs avec les données récupérées
         setAuthors(response.data);
-
-        // Définir l'état de chargement à false après la récupération des données
         setLoading(false);
       })
       .catch((e) => {
-        // Gestion des erreurs
         setError(e);
-
-        // Définir l'état de chargement à false en cas d'erreur
         setLoading(false);
       });
-  }, []); // le tableau vide signifie que useEffect
-  // ne s'exécutera qu'une fois après le premier rendu
+  }, []);
 
-  const renderContent = (): ReactElement => {
-    if (loading) {
-      return <p>Chargement...</p>;
-    }
+  return (
+    <div>
+      <Navbar current_page="Auteurs" />
+      <div className="m-10">
+        <h1 className="text-3xl font-bold mb-4 mt-10 text-center">Liste des auteurs</h1>
 
-    if (error) {
-      return <p>{`Erreur : ${error}`}</p>;
-    }
+        {loading && <p className="text-gray-600 text-center">Chargement...</p>}
+        {error && <p className="text-red-600 text-center">{`Erreur : ${error}`}</p>}
 
-    return (
-      <div>
-        <Navbar current_page="Auteurs" />
-        <h1>Liste des auteurs</h1>
-        <ul>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4">
           {authors.map((author) => (
-            <li key={author.id}>
-              {`${author.firstName} ${author.lastName}`}
+            <li key={author.id} className="bg-white shadow-lg rounded-lg">
               <img
-                src={author.photoUrl}
+                src={`https://${author.photoUrl}`} 
                 alt={`${author.firstName} ${author.lastName}`}
-                className="w-72 h-72 rounded-full object-cover"
+                className="w-full h-64 object-cover rounded-t-lg"
               />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-center">{`${author.firstName} ${author.lastName}`}</h2>
+              </div>
             </li>
           ))}
         </ul>
       </div>
-    );
-  };
-
-  return <div>{renderContent()}</div>;
+    </div>
+  );
 };
+
 export default AuthorsPage;
