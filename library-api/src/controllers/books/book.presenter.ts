@@ -1,17 +1,23 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
 import { GenrePresenter } from 'library-api/src/controllers/genres/genre.presenter';
 import { BookId } from 'library-api/src/entities';
 import { BookModel, PlainBookModel } from 'library-api/src/models';
 
 export class PlainBookPresenter {
+  @ApiProperty()
   id: BookId;
 
+  @ApiProperty()
   name: string;
 
+  @ApiProperty()
   writtenOn: Date;
 
+  @ApiProperty()
   author: PlainAuthorPresenter;
 
+  @ApiProperty()
   genres: string[];
 
   private constructor(data: PlainBookPresenter) {
@@ -30,14 +36,19 @@ export class PlainBookPresenter {
 }
 
 export class BookPresenter {
+  @ApiProperty()
   id: string;
 
+  @ApiProperty()
   name: string;
 
+  @ApiProperty()
   author: PlainAuthorPresenter;
 
+  @ApiProperty()
   writtenOn: Date;
 
+  @ApiProperty()
   genres: GenrePresenter[];
 
   private constructor(data: BookPresenter) {

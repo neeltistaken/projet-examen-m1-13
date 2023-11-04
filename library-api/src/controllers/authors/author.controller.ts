@@ -1,55 +1,84 @@
-'use client';
-import React, { FC, useEffect, useState } from 'react';
-import axios from 'axios';
-import { PlainAuthorModel } from '../../models/author.model';
-import Navbar from "@/app/NavBar";
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
+import { AuthorId } from 'library-api/src/entities';
+import { AuthorUseCases } from 'library-api/src/useCases';
 
-const AuthorsPage: FC = () => {
-  const [authors, setAuthors] = useState<PlainAuthorModel[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+@ApiTags('authors')
+@Controller('authors')
+export class AuthorController {
+  constructor(private readonly authorUseCases: AuthorUseCases) {}
 
-  useEffect(() => {
-    setLoading(true);
+  @Get('/')
+  @ApiOperation({ summary: 'Get all authors' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter, isArray: true })
+  public async getAll(): Promise<PlainAuthorPresenter[]> {
+    const authors = await this.authorUseCases.getAllPlain();
 
-    axios
-      .get('http://localhost:3001/authors')
-      .then((response) => {
-        setAuthors(response.data);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setError(e);
-        setLoading(false);
-      });
-  }, []);
+    return authors.map(PlainAuthorPresenter.from);
+  }
 
-  return (
-    <div>
-      <Navbar current_page="Auteurs" />
-      <div className="m-10">
-        <h1 className="text-3xl font-bold mb-4 mt-10 text-center">Liste des auteurs</h1>
+  @Get('/:id')
+  @ApiOperation({ summary: 'Get an author by its ID' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiResponse({ status: 404, description: 'Author not found' })
+  public async getById(
+    @Param('id') id: AuthorId,
+  ): Promise<PlainAuthorPresenter> {
+    const author = await this.authorUseCases.getById(id);
 
-        {loading && <p className="text-gray-600 text-center">Chargement...</p>}
-        {error && <p className="text-red-600 text-center">{`Erreur : ${error}`}</p>}
+    return PlainAuthorPresenter.from(author);
+  }
 
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4">
-          {authors.map((author) => (
-            <li key={author.id} className="bg-white shadow-lg rounded-lg">
-              <img
-                src={`https://${author.photoUrl}`} // Ajoutez "https://" ici
-                alt={`${author.firstName} ${author.lastName}`}
-                className="w-full h-64 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-center">{`${author.firstName} ${author.lastName}`}</h2>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-};
+  @Post('/')
+  @ApiOperation({ summary: 'Create an author' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiParam({ name: 'firstName', type: 'string' })
+  @ApiParam({ name: 'lastName', type: 'string' })
+  @ApiParam({ name: 'photoUrl', type: 'string' })
+  public async create(@Query() query): Promise<PlainAuthorPresenter> {
+    const author = await this.authorUseCases.create(
+      query.firstName,
+      query.lastName,
+      query.photoUrl,
+    );
 
-export default AuthorsPage;
+    return PlainAuthorPresenter.from(author);
+  }
+
+  @Put('/:id/')
+  @ApiOperation({ summary: 'Update an author' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'firstName', type: 'string' })
+  @ApiParam({ name: 'lastName', type: 'string' })
+  @ApiParam({ name: 'photoUrl', type: 'string' })
+  public async update(
+    @Param('id') id: AuthorId,
+    @Query() query,
+  ): Promise<PlainAuthorPresenter> {
+    const { firstName, lastName, photoUrl } = query;
+
+    return PlainAuthorPresenter.from(
+      await this.authorUseCases.update(id, firstName, lastName, photoUrl),
+    );
+  }
+
+  @Delete('/:id')
+  @ApiOperation({ summary: 'Delete an author' })
+  @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  public async delete(
+    @Param('id') id: AuthorId,
+  ): Promise<PlainAuthorPresenter> {
+    return PlainAuthorPresenter.from(await this.authorUseCases.delete(id));
+  }
+}
