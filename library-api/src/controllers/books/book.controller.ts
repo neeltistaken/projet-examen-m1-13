@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -80,6 +81,21 @@ export class BookController {
   @ApiParam({ name: 'id', type: 'string' })
   public async delete(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.delete(id);
+
+    return BookPresenter.from(book);
+  }
+
+  @Patch('/:id')
+  @ApiOperation({ summary: 'Add a book genre' })
+  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'genreId', type: 'string' })
+  public async addGenre(
+    @Param('id') id: BookId,
+    @Query() query,
+  ): Promise<BookPresenter> {
+    const { genreId } = query;
+    const book = await this.bookUseCases.addGenre(id, genreId);
 
     return BookPresenter.from(book);
   }
