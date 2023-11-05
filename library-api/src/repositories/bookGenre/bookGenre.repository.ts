@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-// import { NotFoundError } from 'library-api/src/common/errors';
-// import { NotFoundError } from 'library-api/src/common/errors';
 import {
   Book,
   BookGenre,

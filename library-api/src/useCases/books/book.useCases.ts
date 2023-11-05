@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MissingParamError } from 'library-api/src/common/errors';
 import { BookId, GenreId } from 'library-api/src/entities';
 import { BookRepository } from 'library-api/src/repositories';
+import { GenreRepository } from 'library-api/src/repositories/genres/genre.repository';
 import { BookGenreRepository } from 'library-api/src/repositories/bookGenre/bookGenre.repository';
 import {
   BookUseCasesOutput,
@@ -13,6 +14,7 @@ export class BookUseCases {
   constructor(
     private readonly bookRepository: BookRepository,
     private readonly bookGenreRepository: BookGenreRepository,
+    private readonly genreRepository: GenreRepository,
   ) {}
 
   /**
@@ -95,6 +97,29 @@ export class BookUseCases {
   }
 
   /**
+   * Check if a book has a genre
+   * @param id Book's ID
+   * @param genreId Genre's ID
+   * @returns True if the book has the genre
+   */
+  public async hasGenre(
+    id: BookId,
+    genreId: GenreId,
+  ): Promise<boolean | undefined> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    if (!genreId) {
+      throw new MissingParamError('Missing genre ID');
+    }
+
+    const book = await this.bookRepository.getById(id);
+
+    return book.genres.some((genre) => genre.id === genreId);
+  }
+
+  /**
    * Add a book genre
    * @param id Book's ID
    * @param genreId Genre's ID
@@ -112,8 +137,17 @@ export class BookUseCases {
       throw new MissingParamError('Missing genre ID');
     }
 
-    this.bookGenreRepository.addGenreToBook(id, genreId);
+    // Check if the id and genreId are valid
+    await this.bookRepository.getById(id);
+    await this.genreRepository.getById(genreId);
 
+    // Check if the book already has the genre
+    const hasGenre = await this.hasGenre(id, genreId);
+    if (hasGenre) {
+      return this.bookRepository.getById(id);
+    }
+    // Add the genre to the book
+    this.bookGenreRepository.addGenreToBook(id, genreId);
     return this.bookRepository.getById(id);
   }
 }

@@ -17,6 +17,22 @@ export class GenreRepository extends Repository<Genre> {
   }
 
   /**
+   * Get a genre by its ID
+   * @param id Genre's ID
+   * @returns Genre if found
+   * @throws 404: genre with this ID was not found
+   */
+  public async getById(id: GenreId): Promise<Genre> {
+    const genre = await this.findOne({ where: { id } });
+
+    if (!genre) {
+      throw new Error(`Genre - '${id}'`);
+    }
+
+    return genre;
+  }
+
+  /**
    * Create a genre
    * @param name Genre's name
    * @returns Created genre
