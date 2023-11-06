@@ -23,7 +23,6 @@ const AuthorsPage: FC = () => {
     lastName: '',
     photoUrl: '',
   });
-  const [selectedAuthor, setSelectedAuthor] = useState<AuthorWithBookCount | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -68,21 +67,13 @@ const AuthorsPage: FC = () => {
     loadAuthorsWithBookCount();
   }, []);
 
-  const openModal = (author?: PlainAuthorPresenter) => {
-    if (author) {
-      setSelectedAuthor(author);
-      setNewAuthorData({
-        firstName: author.firstName,
-        lastName: author.lastName,
-        photoUrl: author.photoUrl ?? '',
-      });
-    }
+  const openModal = () => {
     setIsModalOpen(true);
   };
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedAuthor(null);  // Reset selected author when modal closes
     setNewAuthorData({       // Reset form data
       firstName: '',
       lastName: '',
@@ -91,11 +82,7 @@ const AuthorsPage: FC = () => {
   };
 
   const handleAuthorFormSubmit = async () => {
-    if (selectedAuthor) {
-      await updateAuthor(selectedAuthor.id, newAuthorData);
-    } else {
-      await createAuthor();
-    }
+    await createAuthor(); // Ajouter cette ligne pour appeler la fonction createAuthor
     closeModal();
   };
 
@@ -106,44 +93,20 @@ const AuthorsPage: FC = () => {
         lastName: newAuthorData.lastName,
         photoUrl: newAuthorData.photoUrl
       };
-
+  
       const response = await axios.post('http://localhost:3001/authors', null, { params });
-
-      const createdAuthor = {
+  
+      const createdAuthor: AuthorWithBookCount = {   // Specify the type here
         ...newAuthorData,
-        id: response.data.ids
+        id: response.data.ids,
+        bookCount: 0  // Add default bookCount here
       };
       setAuthors(prev => [...prev, createdAuthor]);
     } catch (e) {
       setError((e as AxiosError).message);
     }
   };
-
-  const updateAuthor = async (Id: string, updatedAuthorData: CreateAuthorData) => {
-    try {
-      console.log(Id, updatedAuthorData);
-      const response = await axios.put(`http://localhost:3001/authors/${Id}`, updatedAuthorData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log(response);
-      if (response.status === 200) {
-        const responseData = response.data;
-        const updatedAuthor = {
-          ...selectedAuthor,
-          ...responseData,
-        };
-        setAuthors((prevAuthors) =>
-          prevAuthors.map((author) => (author.id === Id ? updatedAuthor : author))
-        );
-      } else {
-        throw new Error("Unexpected API response status");
-      }
-    } catch (e) {
-      setError((e as AxiosError).message);
-    }
-  };
+  
 
 
   const deleteAuthor = async (Id: string) => {
@@ -219,7 +182,7 @@ const AuthorsPage: FC = () => {
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 border rounded-md max-w-md w-full"
         >
           <h2 className="text-2xl font-bold mb-4">
-            {selectedAuthor ? 'Modifier un auteur' : 'Créer un nouvel auteur'}
+            Créer un nouvel auteur
           </h2>
           <form>
             <div className="mb-4">
@@ -254,7 +217,7 @@ const AuthorsPage: FC = () => {
               onClick={handleAuthorFormSubmit}
               className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 mr-2"
             >
-              {selectedAuthor ? 'Mettre à jour' : 'Créer'}
+              Créer
             </button>
             <button
               type="button"
