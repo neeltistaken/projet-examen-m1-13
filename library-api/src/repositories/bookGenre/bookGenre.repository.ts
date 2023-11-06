@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+// import { NotFoundError } from 'library-api/src/common/errors';
 import {
   Book,
   BookGenre,
@@ -81,5 +82,24 @@ export class BookGenreRepository extends Repository<BookGenre> {
       .execute();
 
     return bookGenre;
+  }
+
+  /**
+   * Remove a genre from a book
+   * @param bookId Book's ID
+   * @param genreId Genre's ID
+   * @returns Book genre
+   * @throws 404: book genre with this ID was not found
+   */
+  public async removeGenreFromBook(
+    bookId: BookId,
+    genreId: GenreId,
+  ): Promise<void> {
+    await this.dataSource.createQueryBuilder().delete().from(BookGenre).where({
+      book: bookId,
+      genre: genreId,
+    });
+
+    return Promise.resolve();
   }
 }

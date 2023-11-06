@@ -85,7 +85,7 @@ export class BookController {
     return BookPresenter.from(book);
   }
 
-  @Patch('/:id')
+  @Patch('/:id/genre')
   @ApiOperation({ summary: 'Add a book genre' })
   @ApiAcceptedResponse({ type: BookPresenter })
   @ApiParam({ name: 'id', type: 'string' })
@@ -96,6 +96,21 @@ export class BookController {
   ): Promise<BookPresenter> {
     const { genreId } = query;
     const book = await this.bookUseCases.addGenre(id, genreId);
+
+    return BookPresenter.from(book);
+  }
+
+  @Delete('/:id/genre')
+  @ApiOperation({ summary: 'Remove a book genre' })
+  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'genreId', type: 'string' })
+  public async removeGenre(
+    @Param('id') id: BookId,
+    @Query() query,
+  ): Promise<BookPresenter> {
+    const { genreId } = query;
+    const book = await this.bookUseCases.removeGenre(id, genreId);
 
     return BookPresenter.from(book);
   }

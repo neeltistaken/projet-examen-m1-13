@@ -150,4 +150,37 @@ export class BookUseCases {
     this.bookGenreRepository.addGenreToBook(id, genreId);
     return this.bookRepository.getById(id);
   }
+
+  /**
+   * Remove a book genre
+   * @param id Book's ID
+   * @param genreId Genre's ID
+   * @returns Updated book
+   * @throws 404: book with this ID was not found
+   */
+  public async removeGenre(
+    id: BookId,
+    genreId: GenreId,
+  ): Promise<BookUseCasesOutput> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    if (!genreId) {
+      throw new MissingParamError('Missing genre ID');
+    }
+
+    // Check if the id and genreId are valid
+    await this.bookRepository.getById(id);
+    await this.genreRepository.getById(genreId);
+
+    // Check if the book has the genre
+    const hasGenre = await this.hasGenre(id, genreId);
+    if (!hasGenre) {
+      return this.bookRepository.getById(id);
+    }
+    // Remove the genre from the book
+    this.bookGenreRepository.removeGenreFromBook(id, genreId);
+    return this.bookRepository.getById(id);
+  }
 }
