@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlainUserPresenter } from 'library-api/src/controllers/users/user.presenter';
+import { UserId } from 'library-api/src/entities';
 import { UserUseCases } from 'library-api/src/useCases';
 
 @ApiTags('users')
@@ -29,6 +30,25 @@ export class UserController {
       query.firstName,
       query.lastName,
     );
+
+    return PlainUserPresenter.from(user);
+  }
+
+  @Delete('/:id')
+  @ApiOperation({ summary: 'Delete a user' })
+  @ApiResponse({ status: 204 })
+  @ApiParam({ name: 'id', type: 'string' })
+  public async delete(@Param('id') id: UserId): Promise<void> {
+    await this.userUseCases.delete(id);
+  }
+
+  @Get('/:id')
+  @ApiOperation({ summary: 'Get a user by its ID' })
+  @ApiResponse({ status: 200, type: PlainUserPresenter })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiParam({ name: 'id', type: 'string' })
+  public async getById(@Param('id') id: UserId): Promise<PlainUserPresenter> {
+    const user = await this.userUseCases.getById(id);
 
     return PlainUserPresenter.from(user);
   }
