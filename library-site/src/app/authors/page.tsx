@@ -11,8 +11,10 @@ type CreateAuthorData = {
   photoUrl: string;
 };
 
+type AuthorWithBookCount = PlainAuthorPresenter & { bookCount: number };
+
 const AuthorsPage: FC = () => {
-  const [authors, setAuthors] = useState<PlainAuthorPresenter[]>([]);
+  const [authors, setAuthors] = useState<AuthorWithBookCount[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,22 +23,49 @@ const AuthorsPage: FC = () => {
     lastName: '',
     photoUrl: '',
   });
-  const [selectedAuthor, setSelectedAuthor] = useState<PlainAuthorPresenter | null>(null);
+  const [selectedAuthor, setSelectedAuthor] = useState<AuthorWithBookCount | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const loadAuthors = async () => {
+    const loadAuthorsWithBookCount = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:3001/authors');
-        setAuthors(response.data);
+        // 1. Obtenez tous les livres.
+        const booksResponse = await axios.get('http://localhost:3001/books');
+        const allBooks = booksResponse.data;
+        console.log(allBooks);
+        // 2. Créez un objet pour compter les livres de chaque auteur.
+        const bookCountByAuthor: { [key: string]: number } = {};
+  
+        // 3. Parcourez tous les livres et augmentez le compte pour chaque authorId.
+        allBooks.forEach((book: { author: { id: string } }) => {
+          const authorId = book.author.id;
+          if (bookCountByAuthor[authorId]) {
+              bookCountByAuthor[authorId]++;
+          } else {
+              bookCountByAuthor[authorId] = 1;
+          }
+      });
+      
+  
+        // Obtenez tous les auteurs.
+        const authorsResponse = await axios.get('http://localhost:3001/authors');
+        const authorData = authorsResponse.data;
+  
+        // 4. Mettez à jour les auteurs avec le compte des livres.
+        const authorsWithBookCounts = authorData.map((author: PlainAuthorPresenter) => {
+          return { ...author, bookCount: bookCountByAuthor[author.id] || 0 };
+        });
+        console.log(bookCountByAuthor)
+        setAuthors(authorsWithBookCounts);
         setLoading(false);
       } catch (e) {
         setError((e as AxiosError).message);
         setLoading(false);
       }
     };
-    loadAuthors();
+  
+    loadAuthorsWithBookCount();
   }, []);
 
   const openModal = (author?: PlainAuthorPresenter) => {
@@ -167,8 +196,10 @@ const AuthorsPage: FC = () => {
                   className="w-full h-64 object-cover rounded-t-lg"
                 />
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold text-center">{`${author.firstName} ${author.lastName}`}</h2>
-                  
+                  <h2 className="text-xl font-semibold text-center">
+                    {`${author.firstName} ${author.lastName} (${author.bookCount} ${author.bookCount > 1 ? 'livres' : 'livre'})`}
+                  </h2>
+
                   <button
                     onClick={() => deleteAuthor(author.id)}
                     className="bg-red-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700"
