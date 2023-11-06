@@ -44,7 +44,7 @@ export class AuthorController {
   @ApiParam({ name: 'firstName', type: 'string' })
   @ApiParam({ name: 'lastName', type: 'string' })
   @ApiParam({ name: 'photoUrl', type: 'string' })
-  public async create(@Query() query): Promise<PlainAuthorPresenter> {
+  public async create(@Query() query: {firstName: string, lastName: string, photoUrl: string}): Promise<PlainAuthorPresenter> {
     const author = await this.authorUseCases.create(
       query.firstName,
       query.lastName,
@@ -63,7 +63,7 @@ export class AuthorController {
   @ApiParam({ name: 'photoUrl', type: 'string' })
   public async update(
     @Param('id') id: AuthorId,
-    @Query() query,
+    @Query() query: {firstName: string, lastName: string, photoUrl: string},
   ): Promise<PlainAuthorPresenter> {
     const { firstName, lastName, photoUrl } = query;
 
