@@ -11,4 +11,11 @@ export class UserUseCases {
   public async getAllPlain(): Promise<PlainUserUseCasesOutput[]> {
     return this.userRepository.getAllPlain();
   }
+
+  public async create(
+    firstName: string,
+    lastName: string,
+  ): Promise<PlainUserUseCasesOutput> {
+    return this.userRepository.createUser(firstName, lastName);
+  }
 }

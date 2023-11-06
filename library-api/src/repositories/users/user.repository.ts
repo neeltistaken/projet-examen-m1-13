@@ -14,4 +14,16 @@ export class UserRepository extends Repository<User> {
   public async getAllPlain(): Promise<PlainUserRepositoryOutput[]> {
     return this.createQueryBuilder('user').getMany();
   }
+
+  public async createUser(
+    firstName: string,
+    lastName: string,
+  ): Promise<PlainUserRepositoryOutput> {
+    const user = new User();
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+
+    return this.save(user);
+  }
 }
