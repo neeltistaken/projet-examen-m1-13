@@ -86,7 +86,7 @@ const AuthorsPage: FC = () => {
 
   return (
     <div>
-      <Navbar current_page="Auteurs" />
+      <Navbar currentPage="Auteurs" />
       <div className="m-10">
         <h1 className="text-3xl font-bold mb-4 mt-10 text-center">Liste des auteurs</h1>
 

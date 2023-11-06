@@ -12,7 +12,7 @@ const BooksPage: FC = (): ReactElement => {
 
   return (
     <>
-      <Navbar current_page="Livres" />
+      <Navbar currentPage="Livres" />
       <h1>Books</h1>
       {books.map((book) => (
         <div key={book.id}>{book.name}</div>

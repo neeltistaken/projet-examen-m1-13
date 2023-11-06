@@ -7,7 +7,7 @@ const UsersPage: FC = (): ReactElement => {
 
   return (
     <>
-      <Navbar current_page="Utilisateurs" />
+      <Navbar currentPage="Utilisateurs" />
       <h1>Users</h1>
     </>
   );

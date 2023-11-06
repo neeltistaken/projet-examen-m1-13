@@ -3,7 +3,7 @@ import Navbar from './NavBar';
 
 const Home: FC = (): ReactElement => (
   <>
-    <Navbar current_page="Accueil" />
+    <Navbar currentPage="Accueil" />
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       Biblio'tech
     </main>
