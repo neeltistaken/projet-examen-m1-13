@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlainUserPresenter } from 'library-api/src/controllers/users/user.presenter';
 import { UserId } from 'library-api/src/entities';
@@ -49,6 +57,24 @@ export class UserController {
   @ApiParam({ name: 'id', type: 'string' })
   public async getById(@Param('id') id: UserId): Promise<PlainUserPresenter> {
     const user = await this.userUseCases.getById(id);
+
+    return PlainUserPresenter.from(user);
+  }
+
+  @Put('/:id')
+  @ApiOperation({ summary: 'Update a user' })
+  @ApiResponse({ status: 200, type: PlainUserPresenter })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'firstName', type: 'string' })
+  @ApiParam({ name: 'lastName', type: 'string' })
+  public async update(
+    @Param('id') id: UserId,
+    @Query() query: { firstName: string; lastName: string },
+  ): Promise<PlainUserPresenter> {
+    const { firstName, lastName } = query;
+
+    const user = await this.userUseCases.update(id, firstName, lastName);
 
     return PlainUserPresenter.from(user);
   }

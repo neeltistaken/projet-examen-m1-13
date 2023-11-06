@@ -40,4 +40,21 @@ export class UserUseCases {
 
     return this.userRepository.getById(id);
   }
+
+  public async update(
+    id: UserId,
+    firstName: string,
+    lastName: string,
+  ): Promise<PlainUserUseCasesOutput> {
+    if (!id) {
+      throw new MissingParamError('id');
+    }
+
+    const user = await this.userRepository.getById(id);
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+
+    return this.userRepository.save(user);
+  }
 }
