@@ -22,6 +22,7 @@ const AuthorsPage: FC = () => {
     photoUrl: '',
   });
   const [selectedAuthor, setSelectedAuthor] = useState<PlainAuthorPresenter | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const loadAuthors = async () => {
@@ -76,42 +77,55 @@ const AuthorsPage: FC = () => {
         lastName: newAuthorData.lastName,
         photoUrl: newAuthorData.photoUrl
       };
-      
+
       const response = await axios.post('http://localhost:3001/authors', null, { params });
-      
+
       const createdAuthor = {
         ...newAuthorData,
-        id: response.data.id
+        id: response.data.ids
       };
       setAuthors(prev => [...prev, createdAuthor]);
     } catch (e) {
       setError((e as AxiosError).message);
     }
   };
-  
 
-  const updateAuthor = async (authorId: string, updatedAuthorData: CreateAuthorData) => {
+  const updateAuthor = async (Id: string, updatedAuthorData: CreateAuthorData) => {
     try {
-      const response = await axios.put(`http://localhost:3001/authors/${authorId}`, updatedAuthorData);
-      const updatedAuthors = authors.map((author) =>
-        author.id === authorId ? { ...author, ...response.data } : author
-      );
-      setAuthors(updatedAuthors);
+      console.log(Id, updatedAuthorData);
+      const response = await axios.put(`http://localhost:3001/authors/${Id}`, updatedAuthorData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+      if (response.status === 200) {
+        const responseData = response.data;
+        const updatedAuthor = {
+          ...selectedAuthor,
+          ...responseData,
+        };
+        setAuthors((prevAuthors) =>
+          prevAuthors.map((author) => (author.id === Id ? updatedAuthor : author))
+        );
+      } else {
+        throw new Error("Unexpected API response status");
+      }
     } catch (e) {
       setError((e as AxiosError).message);
     }
   };
 
-  const deleteAuthor = async (authorId: string) => {
+
+  const deleteAuthor = async (Id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/authors/${authorId}`);
-      const updatedAuthors = authors.filter((author) => author.id !== authorId);
+      await axios.delete(`http://localhost:3001/authors/${Id}`);
+      const updatedAuthors = authors.filter((author) => author.id !== Id);
       setAuthors(updatedAuthors);
     } catch (e) {
       setError((e as AxiosError).message);
     }
   };
-
   return (
     <div>
       <Navbar currentPage="Auteurs" />
@@ -121,6 +135,16 @@ const AuthorsPage: FC = () => {
         {loading && <p className="text-gray-600 text-center">Chargement...</p>}
         {error && <p className="text-red-600 text-center">{`Erreur : ${error}`}</p>}
 
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Rechercher un auteur..."
+            className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+          />
+        </div>
+
         <button
           onClick={() => openModal()}
           className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-blue-700 mr-2"
@@ -129,90 +153,91 @@ const AuthorsPage: FC = () => {
         </button>
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4">
-          {authors.map((author) => (
-            <li key={author.id} className="bg-white shadow-lg rounded-lg">
-              <img
-                src={`https://${author.photoUrl || 'uploads-ssl.webflow.com/611273e5b99302da68352039/6231e94a41b356332fe08549_la-biographie-de-la-semaine-les-mots-par-jean-paul-sartre-main.jpeg'}`}
-                alt={`${author.firstName} ${author.lastName}`}
-                className="w-full h-64 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-center">{`${author.firstName} ${author.lastName}`}</h2>
-                <button
-                  onClick={() => openModal(author)}
-                  className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-blue-700 mr-2"
-                >
-                  Modifier
-                </button>
-                <button
-                  onClick={() => deleteAuthor(author.id)}
-                  className="bg-red-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </li>
-          ))}
+          {authors
+            .filter(author => {
+              if (!searchTerm) return true;
+              const fullName = `${author.firstName} ${author.lastName}`.toLowerCase();
+              return fullName.includes(searchTerm.toLowerCase());
+            })
+            .map((author) => (
+              <li key={author.id} className="bg-white shadow-lg rounded-lg">
+                <img
+                  src={`https://${author.photoUrl || 'uploads-ssl.webflow.com/611273e5b99302da68352039/6231e94a41b356332fe08549_la-biographie-de-la-semaine-les-mots-par-jean-paul-sartre-main.jpeg'}`}
+                  alt={`${author.firstName} ${author.lastName}`}
+                  className="w-full h-64 object-cover rounded-t-lg"
+                />
+                <div className="p-4">
+                  <h2 className="text-xl font-semibold text-center">{`${author.firstName} ${author.lastName}`}</h2>
+                  
+                  <button
+                    onClick={() => deleteAuthor(author.id)}
+                    className="bg-red-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </li>
+            ))}
         </ul>
+        {/* Modal for creating/editing an author */}
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Author Modal"
+          appElement={document.getElementById('root') || undefined}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 border rounded-md max-w-md w-full"
+        >
+          <h2 className="text-2xl font-bold mb-4">
+            {selectedAuthor ? 'Modifier un auteur' : 'Créer un nouvel auteur'}
+          </h2>
+          <form>
+            <div className="mb-4">
+              <label className="block font-semibold">Prénom:</label>
+              <input
+                type="text"
+                value={newAuthorData.firstName}
+                onChange={(e) => setNewAuthorData((prev) => ({ ...prev, firstName: e.target.value }))}
+                className="w-full mt-2 p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block font-semibold">Nom de famille:</label>
+              <input
+                type="text"
+                value={newAuthorData.lastName}
+                onChange={(e) => setNewAuthorData((prev) => ({ ...prev, lastName: e.target.value }))}
+                className="w-full mt-2 p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block font-semibold">URL de la photo:</label>
+              <input
+                type="text"
+                value={newAuthorData.photoUrl}
+                onChange={(e) => setNewAuthorData((prev) => ({ ...prev, photoUrl: e.target.value }))}
+                className="w-full mt-2 p-2 border rounded-md"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleAuthorFormSubmit}
+              className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 mr-2"
+            >
+              {selectedAuthor ? 'Mettre à jour' : 'Créer'}
+            </button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-gray-700"
+            >
+              Annuler
+            </button>
+          </form>
+        </Modal>
       </div>
-
-      {/* Modal for creating/editing an author */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Author Modal"
-        appElement={document.getElementById('root') || undefined}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 border rounded-md max-w-md w-full"
-      >
-        <h2 className="text-2xl font-bold mb-4">
-          {selectedAuthor ? 'Modifier un auteur' : 'Créer un nouvel auteur'}
-        </h2>
-        <form>
-          <div className="mb-4">
-            <label className="block font-semibold">Prénom:</label>
-            <input
-              type="text"
-              value={newAuthorData.firstName}
-              onChange={(e) => setNewAuthorData((prev) => ({ ...prev, firstName: e.target.value }))}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold">Nom de famille:</label>
-            <input
-              type="text"
-              value={newAuthorData.lastName}
-              onChange={(e) => setNewAuthorData((prev) => ({ ...prev, lastName: e.target.value }))}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold">URL de la photo:</label>
-            <input
-              type="text"
-              value={newAuthorData.photoUrl}
-              onChange={(e) => setNewAuthorData((prev) => ({ ...prev, photoUrl: e.target.value }))}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleAuthorFormSubmit}
-            className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 mr-2"
-          >
-            {selectedAuthor ? 'Mettre à jour' : 'Créer'}
-          </button>
-          <button
-            type="button"
-            onClick={closeModal}
-            className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-gray-700"
-          >
-            Annuler
-          </button>
-        </form>
-      </Modal>
     </div>
   );
 };
 
 export default AuthorsPage;
+
