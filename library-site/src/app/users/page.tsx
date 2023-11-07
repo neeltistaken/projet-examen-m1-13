@@ -1,10 +1,9 @@
 'use client';
 
 import { FC, ReactElement } from 'react';
-import Navbar from "@/app/NavBar";
+import Navbar from '@/app/NavBar';
 
 const UsersPage: FC = (): ReactElement => {
-
   return (
     <>
       <Navbar currentPage="Utilisateurs" />

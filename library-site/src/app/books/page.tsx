@@ -2,7 +2,7 @@
 
 import { FC, ReactElement, useEffect } from 'react';
 import { useBooksProviders } from '@/hooks';
-import Navbar from "@/app/NavBar";
+import Navbar from '@/app/NavBar';
 
 const BooksPage: FC = (): ReactElement => {
   const { useListBooks } = useBooksProviders();

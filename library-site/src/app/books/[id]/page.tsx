@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { FC } from 'react';
-import Navbar from "@/app/NavBar";
+import Navbar from '@/app/NavBar';
 
 const BooksDetailsPage: FC = () => {
   const { id } = useParams();
