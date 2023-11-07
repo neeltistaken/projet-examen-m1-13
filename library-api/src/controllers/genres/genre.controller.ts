@@ -7,12 +7,7 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
-import {
-  ApiAcceptedResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GenreUseCases } from 'library-api/src/useCases';
 import { GenreId } from 'library-api/src/entities';
 import { GenrePresenter } from './genre.presenter';
@@ -24,7 +19,7 @@ export class GenreController {
 
   @Get('/')
   @ApiOperation({ summary: 'Get all genres' })
-  @ApiAcceptedResponse({ type: GenrePresenter, isArray: true })
+  @ApiResponse({ status: 200, type: GenrePresenter, isArray: true })
   public async getAll(): Promise<GenrePresenter[]> {
     const genres = await this.genreUseCases.getAllPlain();
 
@@ -33,7 +28,8 @@ export class GenreController {
 
   @Post('/')
   @ApiOperation({ summary: 'Create a genre' })
-  @ApiAcceptedResponse({ type: GenrePresenter })
+  @ApiResponse({ status: 200, type: GenrePresenter })
+  @ApiResponse({ status: 404, description: "Genre name isn't defined" })
   @ApiParam({ name: 'name', type: 'string' })
   public async create(@Query() query): Promise<GenrePresenter> {
     const { name } = query;
@@ -44,6 +40,8 @@ export class GenreController {
 
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete a genre by its ID' })
+  @ApiResponse({ status: 200, type: GenrePresenter })
+  @ApiResponse({ status: 404, description: "Genre id doesn't exist" })
   @ApiParam({ name: 'id', type: 'string' })
   public async delete(@Param('id') id: GenreId): Promise<void> {
     await this.genreUseCases.delete(id);
@@ -51,6 +49,8 @@ export class GenreController {
 
   @Patch('/:id')
   @ApiOperation({ summary: 'Update a genre name by its ID' })
+  @ApiResponse({ status: 200, type: GenrePresenter })
+  @ApiResponse({ status: 404, description: "Genre id doesn't exist" })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'name', type: 'string' })
   public async update(@Param('id') id: GenreId, @Query() query): Promise<void> {
