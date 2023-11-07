@@ -77,6 +77,7 @@ export class AuthorController {
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete an author' })
   @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiResponse({ status: 404, description: 'Author not found' })
   @ApiParam({ name: 'id', type: 'string' })
   public async delete(
     @Param('id') id: AuthorId,
