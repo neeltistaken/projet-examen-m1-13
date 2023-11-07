@@ -9,7 +9,7 @@ describe('AuthorController', () => {
         lastName: 'Cuvelier',
         photoUrl: 'helloWord',
       };
-      const reponseAPI = {
+      const responseAPI = {
         firstName: 'Cyril',
         lastName: 'Cuvelier',
         photoUrl: 'helloWord',
@@ -17,7 +17,7 @@ describe('AuthorController', () => {
       const url = 'http://localhost:3001/authors';
       const response = await axios.post(url, null, { params });
       id = response.data.id;
-      expect(response.data).toEqual(expect.objectContaining(reponseAPI));
+      expect(response.data).toEqual(expect.objectContaining(responseAPI));
     });
   });
   describe('UpdateAuthor', () => {
@@ -28,7 +28,7 @@ describe('AuthorController', () => {
         lastName: 'Van Boxem',
         photoUrl: 'helloWordBis',
       };
-      const reponseAPI = {
+      const responseAPI = {
         id,
         firstName: 'Rémi',
         lastName: 'Van Boxem',
@@ -36,7 +36,7 @@ describe('AuthorController', () => {
       };
       const url = `http://localhost:3001/authors/${id}`;
       const response = await axios.put(url, null, { params });
-      expect(response.data).toEqual(expect.objectContaining(reponseAPI));
+      expect(response.data).toEqual(expect.objectContaining(responseAPI));
     });
     it("should return an 404 error because author doesn't exist", async () => {
       const params = {
@@ -60,7 +60,7 @@ describe('AuthorController', () => {
       const params = {
         id,
       };
-      const reponseAPI = {
+      const responseAPI = {
         id,
         firstName: 'Rémi',
         lastName: 'Van Boxem',
@@ -68,7 +68,7 @@ describe('AuthorController', () => {
       };
       const url = `http://localhost:3001/authors/${id}`;
       const response = await axios.get(url, { params });
-      expect(response.data).toEqual(expect.objectContaining(reponseAPI));
+      expect(response.data).toEqual(expect.objectContaining(responseAPI));
     });
     it("should return an 404 error because author id doesn't exist", async () => {
       const fakeId: string = 'fudiskahlskjf';

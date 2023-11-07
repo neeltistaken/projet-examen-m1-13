@@ -15,24 +15,24 @@ beforeAll(async () => {
 });
 
 describe('BookController', () => {
-  describe('Createbook', () => {
+  describe('CreateBook', () => {
     it('should return an book object', async () => {
       const params = {
         authorId,
         title: 'TEST',
       };
-      const reponseAPI = {
+      const responseAPI = {
         name: 'TEST',
       };
       const url = 'http://localhost:3001/books';
       const response = await axios.post(url, null, { params });
-      expect(response.data).toMatchObject(reponseAPI);
+      expect(response.data).toMatchObject(responseAPI);
       bookId = response.data.id;
     });
   });
   describe('GetBook', () => {
     it('should return an book object', async () => {
-      const reponseAPI = {
+      const responseAPI = {
         id: bookId,
         name: 'TEST',
         author: {
@@ -44,7 +44,7 @@ describe('BookController', () => {
       };
       const url = `http://localhost:3001/books/${bookId}`;
       const response = await axios.get(url, null);
-      expect(response.data).toMatchObject(reponseAPI);
+      expect(response.data).toMatchObject(responseAPI);
       bookId = response.data.id;
     });
     it("should return an error 404 because book doesn't exist", async () => {
@@ -65,13 +65,13 @@ describe('BookController', () => {
         authorId,
         title: 'TEST Modified',
       };
-      const reponseAPI = {
+      const responseAPI = {
         id: bookId,
         name: 'TEST Modified',
       };
       const url = `http://localhost:3001/books/${bookId}`;
       const response = await axios.put(url, null, { params });
-      expect(response.data).toMatchObject(reponseAPI);
+      expect(response.data).toMatchObject(responseAPI);
     });
     it("should return an error 404 because book doesn't exist", async () => {
       const params = {
@@ -96,13 +96,13 @@ describe('BookController', () => {
       const params = {
         id: bookId,
       };
-      const reponseAPI = {
+      const responseAPI = {
         id: bookId,
         name: 'TEST Modified',
       };
       const url = `http://localhost:3001/books/${bookId}`;
       const response = await axios.delete(url, { params });
-      expect(response.data).toMatchObject(reponseAPI);
+      expect(response.data).toMatchObject(responseAPI);
     });
     it("should return an error 404 because the book doesn't exist", async () => {
       const params = {
