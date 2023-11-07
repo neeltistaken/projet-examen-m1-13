@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface ModalProps {
   isOpen: boolean;
@@ -43,8 +45,16 @@ export function Modal({
           </div>
           {/*Modal body*/}
           <div
-            className={`z-20 bg-white p-4 sm:p-6 rounded shadow-lg max-w-${width} w-full`}
+            className={`relative z-20 bg-white p-4 sm:p-6 rounded shadow-lg max-w-${width} w-full`}
           >
+            {withCloseButton && (
+              <button
+                className="absolute top-1 right-1 px-1 text-gray-500 hover:text-gray-700"
+                onClick={onClose}
+              >
+                <FontAwesomeIcon icon={faXmark} size="lg" />
+              </button>
+            )}
             {children}
           </div>
         </div>
