@@ -180,7 +180,7 @@ export class BookUseCases {
       return this.bookRepository.getById(id);
     }
     // Remove the genre from the book
-    this.bookGenreRepository.removeGenreFromBook(id, genreId);
+    await this.bookGenreRepository.removeGenreFromBook(id, genreId);
     return this.bookRepository.getById(id);
   }
 }
