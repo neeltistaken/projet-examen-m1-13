@@ -21,11 +21,9 @@ export class BookGenreRepository extends Repository<BookGenre> {
    * @returns Array of book genres
    */
   public async getAll(): Promise<BookGenreRepositoryOutput[]> {
-    const bookGenres = await this.find({
+    return this.find({
       relations: { genre: true, book: true },
     });
-
-    return bookGenres;
   }
 
   //   /**
@@ -95,10 +93,15 @@ export class BookGenreRepository extends Repository<BookGenre> {
     bookId: BookId,
     genreId: GenreId,
   ): Promise<void> {
-    await this.dataSource.createQueryBuilder().delete().from(BookGenre).where({
-      book: bookId,
-      genre: genreId,
-    });
+    await this.dataSource
+      .createQueryBuilder()
+      .delete()
+      .from(BookGenre)
+      .where({
+        book: bookId,
+        genre: genreId,
+      })
+      .execute();
 
     return Promise.resolve();
   }
