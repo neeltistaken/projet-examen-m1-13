@@ -26,7 +26,6 @@
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18",
-    "react-modal": "^3.16.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.6",

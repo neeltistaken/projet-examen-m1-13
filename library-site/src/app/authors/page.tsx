@@ -3,7 +3,8 @@ import React, { FC, useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { PlainAuthorPresenter } from '../../../../library-api/src/controllers/authors/author.presenter';
 import Navbar from '@/app/NavBar';
-import Modal from 'react-modal';
+import { Modal } from '@/components/modal';
+import { useDisclosure } from '@/hooks';
 
 type CreateAuthorData = {
   firstName: string;
@@ -17,7 +18,11 @@ const AuthorsPage: FC = () => {
   const [authors, setAuthors] = useState<AuthorWithBookCount[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure();
   const [newAuthorData, setNewAuthorData] = useState<CreateAuthorData>({
     firstName: '',
     lastName: '',
@@ -66,20 +71,6 @@ const AuthorsPage: FC = () => {
   
     loadAuthorsWithBookCount();
   }, []);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-  
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setNewAuthorData({       // Reset form data
-      firstName: '',
-      lastName: '',
-      photoUrl: '',
-    });
-  };
 
   const handleAuthorFormSubmit = async () => {
     await createAuthor(); // Ajouter cette ligne pour appeler la fonction createAuthor
@@ -174,16 +165,8 @@ const AuthorsPage: FC = () => {
             ))}
         </ul>
         {/* Modal for creating/editing an author */}
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Author Modal"
-          appElement={document.getElementById('root') || undefined}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 border rounded-md max-w-md w-full"
-        >
-          <h2 className="text-2xl font-bold mb-4">
-            Créer un nouvel auteur
-          </h2>
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <h2 className="text-2xl font-bold mb-4">Créer un nouvel auteur</h2>
           <form>
             <div className="mb-4">
               <label className="block font-semibold">Prénom:</label>
