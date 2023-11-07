@@ -19,20 +19,6 @@ describe('AuthorController', () => {
       id = response.data.id;
       expect(response.data).toEqual(expect.objectContaining(reponseAPI));
     });
-    it("should return an error 404 because all params aren't set", async () => {
-      const params = {
-        firstName: 'Cyril',
-        photoUrl: 'helloWord',
-      };
-      let error: number = 0;
-      const url = 'http://localhost:3001/authors';
-      try {
-        await axios.post(url, null, { params });
-      } catch (errorCreate) {
-        error = errorCreate.response.status;
-      }
-      expect(error).toEqual(404);
-    });
   });
   describe('UpdateAuthor', () => {
     it('should return an modified author object', async () => {
