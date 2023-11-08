@@ -56,9 +56,18 @@ const colorAndVariant = {
   }
 };
 
+const sizes = {
+  xs: 'px-1.5 py-0.5 text-xs',
+  sm: 'px-2 py-1 text-sm',
+  md: 'px-2.5 py-1.5 text-md',
+  lg: 'px-3 py-1.5 text-lg',
+};
+
 interface ButtonProps {
   color?: TailwindcssColors;
   variant?: 'solid' | 'outline';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  pill?: boolean;
   onClick?: () => void;
   children: string;
 }
@@ -66,12 +75,16 @@ interface ButtonProps {
 export function Button({
   color = 'blue',
   variant = 'solid',
+  size = 'md',
+  pill = false,
   onClick,
   children,
 }: ButtonProps) {
   return (
     <button
-      className={`px-4 py-2 rounded-md font-semibold ${colorAndVariant[variant][color]}`}
+      className={`font-semibold ${colorAndVariant[variant][color]} ${
+        sizes[size]
+      } ${pill ? 'rounded-full' : 'rounded-md'}`}
       onClick={onClick}
     >
       {children}
