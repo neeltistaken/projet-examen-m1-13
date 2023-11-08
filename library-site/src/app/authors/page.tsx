@@ -5,6 +5,7 @@ import { PlainAuthorPresenter } from '../../../../library-api/src/controllers/au
 import Navbar from '@/app/NavBar';
 import { Modal } from '@/components/modal';
 import { useDisclosure } from '@/hooks';
+import { Button } from '@/components/button';
 
 type CreateAuthorData = {
   firstName: string;
@@ -63,7 +64,6 @@ const AuthorsPage: FC = () => {
             return { ...author, bookCount: bookCountByAuthor[author.id] || 0 };
           },
         );
-        console.log(bookCountByAuthor);
         setAuthors(authorsWithBookCounts);
         setLoading(false);
       } catch (e) {
@@ -136,12 +136,9 @@ const AuthorsPage: FC = () => {
           />
         </div>
 
-        <button
-          onClick={() => openModal()}
-          className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-blue-700 mr-2"
-        >
+        <Button onClick={openModal} color="blue">
           Créer un auteur
-        </button>
+        </Button>
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4">
           {authors
@@ -168,12 +165,13 @@ const AuthorsPage: FC = () => {
                     } ${author.bookCount > 1 ? 'livres' : 'livre'})`}
                   </h2>
 
-                  <button
+                  <Button
                     onClick={() => deleteAuthor(author.id)}
-                    className="bg-red-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700"
+                    color="red"
+                    variant="outline"
                   >
                     Supprimer
-                  </button>
+                  </Button>
                 </div>
               </li>
             ))}
@@ -224,20 +222,14 @@ const AuthorsPage: FC = () => {
                 className="w-full mt-2 p-2 border rounded-md"
               />
             </div>
-            <button
-              type="button"
-              onClick={handleAuthorFormSubmit}
-              className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 mr-2"
-            >
-              Créer
-            </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-gray-700"
-            >
-              Annuler
-            </button>
+            <div className="flex gap-2 justify-end">
+              <Button onClick={closeModal} color="gray" variant="outline">
+                Annuler
+              </Button>
+              <Button onClick={handleAuthorFormSubmit} color="blue">
+                Créer
+              </Button>
+            </div>
           </form>
         </Modal>
       </div>
