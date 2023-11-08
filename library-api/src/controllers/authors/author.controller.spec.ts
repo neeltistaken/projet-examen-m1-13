@@ -2,6 +2,7 @@ import axios from 'axios';
 
 describe('AuthorController', () => {
   let id: string = '';
+  const fakeId: string = 'hkjhlm';
   describe('CreateAuthor', () => {
     it('should return an author object', async () => {
       const params = {
@@ -46,7 +47,7 @@ describe('AuthorController', () => {
         photoUrl: 'helloWordBis',
       };
       let error: number = 0;
-      const url = `http://localhost:3001/authors/${id}`;
+      const url = `http://localhost:3001/authors/${fakeId}`;
       try {
         await axios.put(url, null, { params });
       } catch (errorUpdate) {
@@ -71,7 +72,6 @@ describe('AuthorController', () => {
       expect(response.data).toEqual(expect.objectContaining(responseAPI));
     });
     it("should return an 404 error because author id doesn't exist", async () => {
-      const fakeId: string = 'fudiskahlskjf';
       const url = `http://localhost:3001/authors/${fakeId}`;
       let error: number = 0;
       try {
@@ -110,7 +110,6 @@ describe('AuthorController', () => {
       expect(response.data).toEqual(apiObject);
     });
     it("should return an error 404 because author doesn't exist", async () => {
-      const fakeId: string = 'fudiskahlskjf';
       const url = `http://localhost:3001/authors/${fakeId}`;
       let error: number = 0;
       try {
