@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { NotFoundError } from 'library-api/src/common/errors';
 import { Genre, GenreId } from 'library-api/src/entities';
 import { DataSource, Repository } from 'typeorm';
 
@@ -26,7 +27,7 @@ export class GenreRepository extends Repository<Genre> {
     const genre = await this.findOne({ where: { id } });
 
     if (!genre) {
-      throw new Error(`Genre - '${id}'`);
+      throw new NotFoundError(`Genre - '${id}'`);
     }
 
     return genre;
