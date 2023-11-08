@@ -69,14 +69,14 @@ describe('GenreController', () => {
     });
   });
   describe('DeleteGenre', () => {
-    it('should return all the Genre objects', async () => {
+    it('should return the deleted Genre objects', async () => {
       const responseAPI = {
         id: genreId,
         name: 'test BIS',
       };
       const url = `http://localhost:3001/genres/${genreId}`;
       const response = await axios.delete(url, null);
-      expect(response.data).toContainEqual(responseAPI);
+      expect(response.data).toEqual(responseAPI);
     });
   });
 });
