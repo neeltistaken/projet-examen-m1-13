@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MissingParamError } from 'library-api/src/common/errors';
-import { BookId, GenreId } from 'library-api/src/entities';
-import { BookRepository } from 'library-api/src/repositories';
+import { AuthorId, BookId, GenreId } from 'library-api/src/entities';
+import { AuthorRepository, BookRepository } from 'library-api/src/repositories';
 import { GenreRepository } from 'library-api/src/repositories/genres/genre.repository';
 import { BookGenreRepository } from 'library-api/src/repositories/bookGenre/bookGenre.repository';
 import {
@@ -15,6 +15,7 @@ export class BookUseCases {
     private readonly bookRepository: BookRepository,
     private readonly bookGenreRepository: BookGenreRepository,
     private readonly genreRepository: GenreRepository,
+    private readonly authorRepository: AuthorRepository,
   ) {}
 
   /**
@@ -66,7 +67,7 @@ export class BookUseCases {
   public async update(
     id: BookId,
     title: string,
-    authorId: string,
+    authorId: AuthorId,
   ): Promise<BookUseCasesOutput> {
     if (!id) {
       throw new MissingParamError('Missing ID');
@@ -79,7 +80,7 @@ export class BookUseCases {
     if (!authorId) {
       throw new MissingParamError('Missing author ID');
     }
-
+    await this.authorRepository.getById(authorId);
     return this.bookRepository.updateBook(id, title, authorId);
   }
 
@@ -147,7 +148,7 @@ export class BookUseCases {
       return this.bookRepository.getById(id);
     }
     // Add the genre to the book
-    this.bookGenreRepository.addGenreToBook(id, genreId);
+    await this.bookGenreRepository.addGenreToBook(id, genreId);
     return this.bookRepository.getById(id);
   }
 

@@ -76,14 +76,10 @@ export class BookRepository extends Repository<Book> {
     title: string,
     authorId: string,
   ): Promise<BookRepositoryOutput> {
-    try {
-      // Change the book's title
-      await this.update(id, { name: title, author: { id: authorId } });
+    // Change the book's title
+    await this.update(id, { name: title, author: { id: authorId } });
 
-      return this.getById(id);
-    } catch (e) {
-      throw new NotFoundError("Author doesn't exist");
-    }
+    return this.getById(id);
   }
 
   /**
