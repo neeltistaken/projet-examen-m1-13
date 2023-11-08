@@ -7,6 +7,7 @@ import { TailwindcssColors } from '@/types/tailwindcss-colors';
 // prettier-ignore
 const colorAndVariant = {
   solid: {
+    primary: "text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700",
     slate: "text-white bg-slate-500 hover:bg-slate-600 active:bg-slate-700",
     gray: "text-white bg-gray-500 hover:bg-gray-600 active:bg-gray-700",
     zinc: "text-white bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700",
@@ -31,6 +32,7 @@ const colorAndVariant = {
     rose: "text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700"
   },
   outline: {
+    primary: "bg-transparent text-primary-600 border border-primary-600 hover:bg-primary-50 active:bg-primary-100",
     slate: "bg-transparent text-slate-600 border border-slate-600 hover:bg-slate-50 active:bg-slate-100",
     gray: "bg-transparent text-gray-600 border border-gray-600 hover:bg-gray-50 active:bg-gray-100",
     zinc: "bg-transparent text-zinc-600 border border-zinc-600 hover:bg-zinc-50 active:bg-zinc-100",

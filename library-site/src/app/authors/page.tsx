@@ -136,7 +136,7 @@ const AuthorsPage: FC = () => {
           />
         </div>
 
-        <Button onClick={openModal} color="blue">
+        <Button onClick={openModal} color="primary">
           Créer un auteur
         </Button>
 

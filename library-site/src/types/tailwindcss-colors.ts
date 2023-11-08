@@ -1,4 +1,5 @@
 export type TailwindcssColors =
+  | 'primary'
   | 'slate'
   | 'gray'
   | 'zinc'
