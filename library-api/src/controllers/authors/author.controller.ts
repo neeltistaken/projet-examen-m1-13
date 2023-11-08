@@ -59,6 +59,7 @@ export class AuthorController {
   @Put('/:id/')
   @ApiOperation({ summary: 'Update an author' })
   @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiResponse({ status: 404, description: "Author isn't find" })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'firstName', type: 'string' })
   @ApiParam({ name: 'lastName', type: 'string' })
