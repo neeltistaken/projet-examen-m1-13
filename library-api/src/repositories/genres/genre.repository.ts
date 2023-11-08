@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundError } from 'library-api/src/common/errors';
 import { Genre, GenreId } from 'library-api/src/entities';
 import { DataSource, Repository } from 'typeorm';
+import { GenrePresenter } from '../../controllers/genres/genre.presenter';
 
 @Injectable()
 export class GenreRepository extends Repository<Genre> {
@@ -50,7 +51,7 @@ export class GenreRepository extends Repository<Genre> {
    * @param id Genre's id
    * @returns Deleted genre
    */
-  public async deleteGenre(id: GenreId): Promise<Genre> {
+  public async deleteGenre(id: GenreId): Promise<GenrePresenter> {
     const genre = await this.findOne({ where: { id } });
     await this.delete(id);
 
@@ -63,10 +64,10 @@ export class GenreRepository extends Repository<Genre> {
    * @param name Genre's name
    * @returns Updated genre
    */
-  public async updateGenre(id: GenreId, name: string): Promise<Genre> {
+  public async updateGenre(id: GenreId, name: string): Promise<GenrePresenter> {
     const genre = await this.findOne({ where: { id } });
     genre.name = name;
-
-    return this.save(genre);
+    await this.save(genre);
+    return this.getById(id);
   }
 }

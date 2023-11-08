@@ -3,6 +3,7 @@ import { GenreRepository } from 'library-api/src/repositories';
 import { MissingParamError } from 'library-api/src/common/errors';
 import { GenreId } from 'library-api/src/entities';
 import { GenreUseCasesOutput } from './genre.useCases.type';
+import { GenrePresenter } from '../../controllers/genres/genre.presenter';
 
 @Injectable()
 export class GenreUseCases {
@@ -22,6 +23,9 @@ export class GenreUseCases {
    * @returns Created genre
    */
   public async create(name: string): Promise<GenreUseCasesOutput> {
+    if (!name) {
+      throw new MissingParamError('Missing genre name');
+    }
     return this.genreRepository.createGenre(name);
   }
 
@@ -29,11 +33,11 @@ export class GenreUseCases {
    * Delete a genre
    * @param id Genre's ID
    */
-  public async delete(id: GenreId): Promise<void> {
+  public async delete(id: GenreId): Promise<GenrePresenter> {
     if (!id) {
       throw new MissingParamError('Missing genre ID');
     }
-    await this.genreRepository.deleteGenre(id);
+    return this.genreRepository.deleteGenre(id);
   }
 
   /**
@@ -41,13 +45,15 @@ export class GenreUseCases {
    * @param id Genre's ID
    * @param name Genre's name
    */
-  public async update(id: GenreId, name: string): Promise<void> {
+  public async update(id: GenreId, name: string): Promise<GenrePresenter> {
     if (!id) {
       throw new MissingParamError('Missing genre ID');
     }
     if (!name) {
       throw new MissingParamError('Missing genre name');
     }
-    await this.genreRepository.updateGenre(id, name);
+    // On vérifie que le genre existe
+    await this.genreRepository.getById(id);
+    return this.genreRepository.updateGenre(id, name);
   }
 }

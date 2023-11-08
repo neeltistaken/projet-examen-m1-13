@@ -43,8 +43,8 @@ export class GenreController {
   @ApiResponse({ status: 200, type: GenrePresenter })
   @ApiResponse({ status: 404, description: "Genre id doesn't exist" })
   @ApiParam({ name: 'id', type: 'string' })
-  public async delete(@Param('id') id: GenreId): Promise<void> {
-    await this.genreUseCases.delete(id);
+  public async delete(@Param('id') id: GenreId): Promise<GenrePresenter> {
+    return this.genreUseCases.delete(id);
   }
 
   @Patch('/:id')
@@ -53,8 +53,11 @@ export class GenreController {
   @ApiResponse({ status: 404, description: "Genre id doesn't exist" })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'name', type: 'string' })
-  public async update(@Param('id') id: GenreId, @Query() query): Promise<void> {
+  public async update(
+    @Param('id') id: GenreId,
+    @Query() query,
+  ): Promise<GenrePresenter> {
     const { name } = query;
-    await this.genreUseCases.update(id, name);
+    return this.genreUseCases.update(id, name);
   }
 }
