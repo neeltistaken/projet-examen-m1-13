@@ -90,7 +90,6 @@ describe('BookController', () => {
     });
     it("should return an error 404 because book doesn't exist", async () => {
       const params = {
-        id: fakeId,
         authorId: fakeId,
         title: 'TEST Modified',
       };
