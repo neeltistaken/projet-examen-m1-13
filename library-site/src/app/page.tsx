@@ -1,13 +1,13 @@
 import { FC, ReactElement } from 'react';
-import Navbar from './NavBar';
+import Image from 'next/image';
 
 const Home: FC = (): ReactElement => (
-  <>
-    <Navbar current_page="Accueil" />
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+  <main className="flex flex-col items-center pt-24">
+    <Image src="/logo.png" alt="logo" width={200} height={200} />
+    <h1 className="text-6xl font-bold text-center text-gray-800">
       Biblio'tech
-    </main>
-  </>
+    </h1>
+  </main>
 );
 
 export default Home;
