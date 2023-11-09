@@ -1,6 +1,3 @@
-export type PlainAuthorModel = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  photoUrl?: string;
-};
+import { PlainAuthorPresenter } from '../../../library-api/src/controllers/authors/author.presenter';
+
+export type PlainAuthorModel = PlainAuthorPresenter;
