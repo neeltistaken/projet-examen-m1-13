@@ -2,17 +2,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { PlainAuthorPresenter } from '../../../../library-api/src/controllers/authors/author.presenter';
-import { Modal } from '@/components/modal';
 import { useDisclosure } from '@/hooks';
 import { Button } from '@/components/button';
-
-type CreateAuthorData = {
-  firstName: string;
-  lastName: string;
-  photoUrl: string;
-};
-
-type AuthorWithBookCount = PlainAuthorPresenter & { bookCount: number };
+import { CreateAuthorModal } from "./create-author-modal";
+import { AuthorWithBookCount } from "./author-with-book-count";
 
 const AuthorsPage: FC = () => {
   const [authors, setAuthors] = useState<AuthorWithBookCount[]>([]);
@@ -23,11 +16,6 @@ const AuthorsPage: FC = () => {
     onOpen: openModal,
     onClose: closeModal,
   } = useDisclosure();
-  const [newAuthorData, setNewAuthorData] = useState<CreateAuthorData>({
-    firstName: '',
-    lastName: '',
-    photoUrl: '',
-  });
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -74,35 +62,6 @@ const AuthorsPage: FC = () => {
     loadAuthorsWithBookCount();
   }, []);
 
-  const handleAuthorFormSubmit = async () => {
-    await createAuthor(); // Ajouter cette ligne pour appeler la fonction createAuthor
-    closeModal();
-  };
-
-  const createAuthor = async () => {
-    try {
-      const params = {
-        firstName: newAuthorData.firstName,
-        lastName: newAuthorData.lastName,
-        photoUrl: newAuthorData.photoUrl,
-      };
-
-      const response = await axios.post('http://localhost:3001/authors', null, {
-        params,
-      });
-
-      const createdAuthor: AuthorWithBookCount = {
-        // Specify the type here
-        ...newAuthorData,
-        id: response.data.ids,
-        bookCount: 0, // Add default bookCount here
-      };
-      setAuthors((prev) => [...prev, createdAuthor]);
-    } catch (e) {
-      setError((e as AxiosError).message);
-    }
-  };
-
   const deleteAuthor = async (Id: string) => {
     try {
       await axios.delete(`http://localhost:3001/authors/${Id}`);
@@ -112,6 +71,7 @@ const AuthorsPage: FC = () => {
       setError((e as AxiosError).message);
     }
   };
+
   return (
     <div>
       <div className="m-10">
@@ -124,6 +84,13 @@ const AuthorsPage: FC = () => {
           <p className="text-red-600 text-center">{`Erreur : ${error}`}</p>
         )}
 
+        <div className="flex justify-end mb-4">
+          <Button onClick={openModal} color="primary">
+            Créer un auteur
+          </Button>
+          <CreateAuthorModal isOpen={isModalOpen} onClose={closeModal} />
+        </div>
+
         <div className="mb-4">
           <input
             type="text"
@@ -133,10 +100,6 @@ const AuthorsPage: FC = () => {
             className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:border-blue-500"
           />
         </div>
-
-        <Button onClick={openModal} color="primary">
-          Créer un auteur
-        </Button>
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-4">
           {authors
@@ -174,62 +137,6 @@ const AuthorsPage: FC = () => {
               </li>
             ))}
         </ul>
-        {/* Modal for creating/editing an author */}
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <h2 className="text-2xl font-bold mb-4">Créer un nouvel auteur</h2>
-          <form>
-            <div className="mb-4">
-              <label className="block font-semibold">Prénom:</label>
-              <input
-                type="text"
-                value={newAuthorData.firstName}
-                onChange={(e) =>
-                  setNewAuthorData((prev) => ({
-                    ...prev,
-                    firstName: e.target.value,
-                  }))
-                }
-                className="w-full mt-2 p-2 border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block font-semibold">Nom de famille:</label>
-              <input
-                type="text"
-                value={newAuthorData.lastName}
-                onChange={(e) =>
-                  setNewAuthorData((prev) => ({
-                    ...prev,
-                    lastName: e.target.value,
-                  }))
-                }
-                className="w-full mt-2 p-2 border rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block font-semibold">URL de la photo:</label>
-              <input
-                type="text"
-                value={newAuthorData.photoUrl}
-                onChange={(e) =>
-                  setNewAuthorData((prev) => ({
-                    ...prev,
-                    photoUrl: e.target.value,
-                  }))
-                }
-                className="w-full mt-2 p-2 border rounded-md"
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button onClick={closeModal} color="gray" variant="outline">
-                Annuler
-              </Button>
-              <Button onClick={handleAuthorFormSubmit} color="blue">
-                Créer
-              </Button>
-            </div>
-          </form>
-        </Modal>
       </div>
     </div>
   );
