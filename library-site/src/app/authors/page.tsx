@@ -6,9 +6,9 @@ import { Button } from '@/components/button';
 import { CreateAuthorModal } from './create-author-modal';
 import { PlainAuthorModel } from '@/models';
 import { AuthorCard } from '@/app/authors/author-card';
+import { AuthorCardSkeleton } from '@/app/authors/author-card-skeleton';
 
 const AuthorsPage: FC = () => {
-  const [error, setError] = useState<string | null>(null);
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
@@ -19,7 +19,7 @@ const AuthorsPage: FC = () => {
     PlainAuthorModel[] | null
   >(null);
 
-  const { authors, isLoading, load } = useListAuthors();
+  const { authors, error, load } = useListAuthors();
 
   const filterAuthors = () => {
     if (!authors) setDisplayedAuthors(null);
@@ -63,12 +63,20 @@ const AuthorsPage: FC = () => {
         />
       </div>
 
-      {isLoading && <p className="text-gray-600 text-center">Chargement...</p>}
-      <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        {displayedAuthors?.map((author) => (
-          <AuthorCard key={author.id} author={author} />
-        ))}
-      </ul>
+      {!displayedAuthors && !error && (
+        <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <AuthorCardSkeleton key={i} />
+          ))}
+        </ul>
+      )}
+      {displayedAuthors && (
+        <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          {displayedAuthors?.map((author) => (
+            <AuthorCard key={author.id} author={author} />
+          ))}
+        </ul>
+      )}
     </>
   );
 };

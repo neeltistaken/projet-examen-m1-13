@@ -8,7 +8,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
   const numberOfBooks = author.books?.length || 0;
 
   return (
-    <li className="shadow-lg rounded-lg flex-initial">
+    <li className="shadow-lg rounded-lg">
       <img
         src={`https://${
           author.photoUrl ||
