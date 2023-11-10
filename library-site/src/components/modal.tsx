@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,6 +8,7 @@ interface ModalProps {
   children?: ReactNode;
   withCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
+  closeOnEscapeKey?: boolean;
   width?:
     | 'xs'
     | 'sm'
@@ -42,8 +43,21 @@ export function Modal({
   children,
   withCloseButton = true,
   closeOnOverlayClick = true,
+  closeOnEscapeKey = true,
   width = 'lg',
 }: ModalProps) {
+  // close the modal when the escape key is pressed
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (closeOnEscapeKey) document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      if (closeOnEscapeKey)
+        document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [onClose]);
+
   if (!isOpen) {
     return null;
   } else {
