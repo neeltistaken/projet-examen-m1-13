@@ -17,7 +17,9 @@ const AuthorDetailsPage: FC = () => {
   } = useDisclosure();
 
   const { author, error, load } = useGetAuthor();
-  useEffect(() => load(authorId as string), [authorId, load]);
+  // we know that load fct will not change (and adding it to the array create an infinite loop)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => load(authorId as string), [authorId]);
 
   if (error) {
     return <p>{`Erreur : ${error.message}`}</p>;
