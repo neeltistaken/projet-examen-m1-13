@@ -50,7 +50,11 @@ const AuthorsPage: FC = () => {
         <Button onClick={openModal} color="primary">
           Créer un auteur
         </Button>
-        <CreateAuthorModal isOpen={isModalOpen} onClose={closeModal} />
+        <CreateAuthorModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          refreshAuthors={load}
+        />
       </div>
 
       <div className="mb-4">

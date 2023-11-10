@@ -46,5 +46,21 @@ export const useAuthorActions = () => {
   const deleteAuthor = (authorId: string) =>
     axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/authors/${authorId}`);
 
-  return { deleteAuthor };
+  const createAuthor = async ({
+    firstName,
+    lastName,
+    photoUrl,
+  }: {
+    firstName: string;
+    lastName: string;
+    photoUrl: string;
+  }) => {
+    return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/authors`, {
+      firstName,
+      lastName,
+      photoUrl,
+    });
+  };
+
+  return { deleteAuthor, createAuthor };
 };
