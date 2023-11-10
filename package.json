@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "api:build": "nest build",
-    "api:start": "nest start",
+    "api:build": "cd library-api && nest build",
+    "api:start": "cd library-api && nest start",
     "api:start:dev": "cd library-api && nest start --watch",
     "api:lint": "eslint \"library-api/**/*.ts\" --fix",
     "api:test": "jest",
