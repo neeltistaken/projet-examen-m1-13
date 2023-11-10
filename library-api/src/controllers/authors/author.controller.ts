@@ -44,7 +44,9 @@ export class AuthorController {
   @ApiParam({ name: 'firstName', type: 'string' })
   @ApiParam({ name: 'lastName', type: 'string' })
   @ApiParam({ name: 'photoUrl', type: 'string' })
-  public async create(@Query() query): Promise<PlainAuthorPresenter> {
+  public async create(
+    @Query() query: { firstName: string; lastName: string; photoUrl: string },
+  ): Promise<PlainAuthorPresenter> {
     const author = await this.authorUseCases.create(
       query.firstName,
       query.lastName,
@@ -57,13 +59,14 @@ export class AuthorController {
   @Put('/:id/')
   @ApiOperation({ summary: 'Update an author' })
   @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiResponse({ status: 404, description: "Author isn't find" })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'firstName', type: 'string' })
   @ApiParam({ name: 'lastName', type: 'string' })
   @ApiParam({ name: 'photoUrl', type: 'string' })
   public async update(
     @Param('id') id: AuthorId,
-    @Query() query,
+    @Query() query: { firstName: string; lastName: string; photoUrl: string },
   ): Promise<PlainAuthorPresenter> {
     const { firstName, lastName, photoUrl } = query;
 
@@ -75,6 +78,7 @@ export class AuthorController {
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete an author' })
   @ApiResponse({ status: 200, type: PlainAuthorPresenter })
+  @ApiResponse({ status: 404, description: 'Author not found' })
   @ApiParam({ name: 'id', type: 'string' })
   public async delete(
     @Param('id') id: AuthorId,

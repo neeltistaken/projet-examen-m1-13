@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MissingParamError } from 'library-api/src/common/errors';
-import { BookId } from 'library-api/src/entities';
-import { BookRepository } from 'library-api/src/repositories';
+import { AuthorId, BookId, GenreId } from 'library-api/src/entities';
+import { AuthorRepository, BookRepository } from 'library-api/src/repositories';
+import { GenreRepository } from 'library-api/src/repositories/genres/genre.repository';
+import { BookGenreRepository } from 'library-api/src/repositories/bookGenre/bookGenre.repository';
 import {
   BookUseCasesOutput,
   PlainBookUseCasesOutput,
@@ -9,7 +11,12 @@ import {
 
 @Injectable()
 export class BookUseCases {
-  constructor(private readonly bookRepository: BookRepository) {}
+  constructor(
+    private readonly bookRepository: BookRepository,
+    private readonly bookGenreRepository: BookGenreRepository,
+    private readonly genreRepository: GenreRepository,
+    private readonly authorRepository: AuthorRepository,
+  ) {}
 
   /**
    * Get all plain books
@@ -60,7 +67,7 @@ export class BookUseCases {
   public async update(
     id: BookId,
     title: string,
-    authorId: string,
+    authorId: AuthorId,
   ): Promise<BookUseCasesOutput> {
     if (!id) {
       throw new MissingParamError('Missing ID');
@@ -73,7 +80,7 @@ export class BookUseCases {
     if (!authorId) {
       throw new MissingParamError('Missing author ID');
     }
-
+    await this.authorRepository.getById(authorId);
     return this.bookRepository.updateBook(id, title, authorId);
   }
 
@@ -88,5 +95,93 @@ export class BookUseCases {
     }
 
     return this.bookRepository.deleteBook(id);
+  }
+
+  /**
+   * Check if a book has a genre
+   * @param id Book's ID
+   * @param genreId Genre's ID
+   * @returns True if the book has the genre
+   */
+  public async hasGenre(
+    id: BookId,
+    genreId: GenreId,
+  ): Promise<boolean | undefined> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    if (!genreId) {
+      throw new MissingParamError('Missing genre ID');
+    }
+
+    const book = await this.bookRepository.getById(id);
+
+    return book.genres.some((genre) => genre.id === genreId);
+  }
+
+  /**
+   * Add a book genre
+   * @param id Book's ID
+   * @param genreId Genre's ID
+   * @returns Updated book
+   */
+  public async addGenre(
+    id: BookId,
+    genreId: GenreId,
+  ): Promise<BookUseCasesOutput> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    if (!genreId) {
+      throw new MissingParamError('Missing genre ID');
+    }
+
+    // Check if the id and genreId are valid
+    await this.bookRepository.getById(id);
+    await this.genreRepository.getById(genreId);
+
+    // Check if the book already has the genre
+    const hasGenre = await this.hasGenre(id, genreId);
+    if (hasGenre) {
+      return this.bookRepository.getById(id);
+    }
+    // Add the genre to the book
+    await this.bookGenreRepository.addGenreToBook(id, genreId);
+    return this.bookRepository.getById(id);
+  }
+
+  /**
+   * Remove a book genre
+   * @param id Book's ID
+   * @param genreId Genre's ID
+   * @returns Updated book
+   * @throws 404: book with this ID was not found
+   */
+  public async removeGenre(
+    id: BookId,
+    genreId: GenreId,
+  ): Promise<BookUseCasesOutput> {
+    if (!id) {
+      throw new MissingParamError('Missing ID');
+    }
+
+    if (!genreId) {
+      throw new MissingParamError('Missing genre ID');
+    }
+
+    // Check if the id and genreId are valid
+    await this.bookRepository.getById(id);
+    await this.genreRepository.getById(genreId);
+
+    // Check if the book has the genre
+    const hasGenre = await this.hasGenre(id, genreId);
+    if (!hasGenre) {
+      return this.bookRepository.getById(id);
+    }
+    // Remove the genre from the book
+    await this.bookGenreRepository.removeGenreFromBook(id, genreId);
+    return this.bookRepository.getById(id);
   }
 }
