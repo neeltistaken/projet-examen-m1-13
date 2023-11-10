@@ -59,13 +59,13 @@ export function CreateAuthorModal({
     },
   ];
 
-  const handleAuthorFormSubmit = async () => {
-    await createAuthor(newAuthorData)
-    // .then(() => {
-    //   refreshAuthors();
-    //   onClose();
-    // })
-    // .catch((error: AxiosError) => console.log(error));
+  const handleAuthorFormSubmit = async (): Promise<void> => {
+    createAuthor(newAuthorData)
+      .then(() => {
+        refreshAuthors();
+        onClose();
+      })
+      .catch((e) => Error(e));
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

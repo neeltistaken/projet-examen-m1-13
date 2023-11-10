@@ -54,11 +54,19 @@ export const useAuthorActions = () => {
     firstName: string;
     lastName: string;
     photoUrl: string;
-  }) => {
-    return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/authors`, {
+  }): Promise<unknown> => {
+    const params = {
       firstName,
       lastName,
       photoUrl,
+    };
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/authors`, null, {
+          params,
+        })
+        .then((response) => resolve(response.data))
+        .catch((err) => reject(err));
     });
   };
 
