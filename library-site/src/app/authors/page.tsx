@@ -43,7 +43,7 @@ const AuthorsPage: FC = () => {
       </h1>
 
       {error && (
-        <p className="text-red-600 text-center">{`Erreur : ${error}`}</p>
+        <p className="text-red-600 text-center">{`Erreur : ${error.message}`}</p>
       )}
 
       <div className="flex justify-end mb-4">
