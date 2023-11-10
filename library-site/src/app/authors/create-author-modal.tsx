@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { AxiosError } from 'axios';
+import { ChangeEvent, ReactNode, useState } from 'react';
 
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
@@ -21,7 +20,7 @@ export function CreateAuthorModal({
   isOpen,
   onClose,
   refreshAuthors,
-}: CreateAuthorModalProps) {
+}: CreateAuthorModalProps): ReactNode {
   const { createAuthor } = useAuthorActions();
   const [newAuthorData, setNewAuthorData] = useState<CreateAuthorData>({
     firstName: '',
@@ -33,29 +32,32 @@ export function CreateAuthorModal({
     {
       label: 'Prénom',
       value: newAuthorData.firstName,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChange: (e: ChangeEvent<HTMLInputElement>): void => {
         setNewAuthorData((prev) => ({
           ...prev,
           firstName: e.target.value,
-        })),
+        }));
+      },
     },
     {
       label: 'Nom de famille',
       value: newAuthorData.lastName,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChange: (e: ChangeEvent<HTMLInputElement>): void => {
         setNewAuthorData((prev) => ({
           ...prev,
           lastName: e.target.value,
-        })),
+        }));
+      },
     },
     {
       label: 'URL de la photo (sans https://)',
       value: newAuthorData.photoUrl,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChange: (e: ChangeEvent<HTMLInputElement>): void => {
         setNewAuthorData((prev) => ({
           ...prev,
           photoUrl: e.target.value,
-        })),
+        }));
+      },
     },
   ];
 
@@ -73,8 +75,14 @@ export function CreateAuthorModal({
       <form>
         {formFields.map((field) => (
           <div className="mb-4" key={field.label}>
-            <label className="block font-semibold">{field.label}</label>
+            <label
+              className="block font-semibold"
+              htmlFor={`${field.label}-input`}
+            >
+              {field.label}
+            </label>
             <input
+              id={`${field.label}-input`}
               type="text"
               value={field.value}
               onChange={field.onChange}

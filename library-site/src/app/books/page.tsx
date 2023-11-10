@@ -7,7 +7,7 @@ const BooksPage: FC = (): ReactElement => {
   const { useListBooks } = useBooksProviders();
   const { books, load } = useListBooks();
 
-  useEffect(() => load, []);
+  useEffect(() => load, [load]);
 
   return (
     <>

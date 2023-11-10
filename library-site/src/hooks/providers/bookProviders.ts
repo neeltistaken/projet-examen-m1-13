@@ -14,7 +14,9 @@ export const useListBooks = (): UseListBooksProvider => {
     axios
       .get(`${process.env.NEXT_PUBLIC_API_URL}/books`)
       .then((data) => setBooks(data.data))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        throw new Error(err);
+      });
   };
 
   return { books, load: fetchBooks };

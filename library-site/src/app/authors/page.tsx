@@ -1,12 +1,12 @@
 'use client';
+
 import React, { FC, useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
 import { useDisclosure, useListAuthors } from '@/hooks';
 import { Button } from '@/components/button';
-import { CreateAuthorModal } from './create-author-modal';
 import { PlainAuthorModel } from '@/models';
-import { AuthorCard } from '@/app/authors/author-card';
-import { AuthorCardSkeleton } from '@/app/authors/author-card-skeleton';
+import { AuthorCardSkeleton } from './author-card-skeleton';
+import { AuthorCard } from './author-card';
+import { CreateAuthorModal } from './create-author-modal';
 
 const AuthorsPage: FC = () => {
   const {
@@ -21,7 +21,10 @@ const AuthorsPage: FC = () => {
 
   const { authors, error, load } = useListAuthors();
 
-  const filterAuthors = () => {
+  useEffect(() => load(), [load]);
+
+  // filter authors by search term on each search term change
+  useEffect(() => {
     if (!authors) setDisplayedAuthors(null);
     else if (!searchTerm) setDisplayedAuthors(authors);
     else {
@@ -31,10 +34,7 @@ const AuthorsPage: FC = () => {
       });
       setDisplayedAuthors(filteredAuthors);
     }
-  };
-
-  useEffect(() => load(), []);
-  useEffect(() => filterAuthors(), [authors, searchTerm]);
+  }, [authors, searchTerm]);
 
   return (
     <>
@@ -61,7 +61,7 @@ const AuthorsPage: FC = () => {
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e): void => setSearchTerm(e.target.value)}
           placeholder="Rechercher un auteur..."
           className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:border-blue-500"
         />
@@ -69,7 +69,7 @@ const AuthorsPage: FC = () => {
 
       {!displayedAuthors && !error && (
         <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 8 }, (_, index) => index).map((i) => (
             <AuthorCardSkeleton key={i} />
           ))}
         </ul>

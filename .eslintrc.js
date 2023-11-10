@@ -10,7 +10,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'next/core-web-vitals',
-    'airbnb'
+    'airbnb',
   ],
   root: true,
   env: {
@@ -25,6 +25,10 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     'react/jsx-filename-extension': 'off',
     'react/react-in-jsx-scope': 'off',
+    // disable require-default-props rule because we declare the default props Using JavaScript
+    // default parameters. (if we use the React defaultProps, another error will
+    // appear because this property is declared as deprecated)
+    'react/require-default-props': 'off',
     'react/function-component-definition': 'off',
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
@@ -33,18 +37,21 @@ module.exports = {
     'import/no-unresolved': 'off',
     'no-empty-function': 'off',
     'no-unused-vars': 'off',
-    'indent': 'off',
+    indent: 'off',
     'object-curly-newline': 'off',
     'max-classes-per-file': 'off',
-    '@typescript-eslint/explicit-member-accessibility': ["error", {
-      accessibility: 'explicit',
-      overrides: {
-        accessors: 'explicit',
-        constructors: 'no-public',
-        methods: 'explicit',
-        properties: 'off',
-        parameterProperties: 'explicit'
-      }
-    }]
+    '@typescript-eslint/explicit-member-accessibility': [
+      'error',
+      {
+        accessibility: 'explicit',
+        overrides: {
+          accessors: 'explicit',
+          constructors: 'no-public',
+          methods: 'explicit',
+          properties: 'off',
+          parameterProperties: 'explicit',
+        },
+      },
+    ],
   },
 };

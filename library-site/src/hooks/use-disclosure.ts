@@ -16,11 +16,11 @@ export function useDisclosure(
 ): UseDisclosureReturn {
   const [isOpen, setIsOpen] = useState(props.defaultIsOpen || false);
 
-  const onClose = () => setIsOpen(false);
+  const onClose = (): void => setIsOpen(false);
 
-  const onOpen = () => setIsOpen(true);
+  const onOpen = (): void => setIsOpen(true);
 
-  const onToggle = () => {
+  const onToggle = (): void => {
     const action = isOpen ? onClose : onOpen;
     action();
   };

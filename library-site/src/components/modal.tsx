@@ -45,48 +45,48 @@ export function Modal({
   closeOnOverlayClick = true,
   closeOnEscapeKey = true,
   width = 'lg',
-}: ModalProps) {
+}: ModalProps): ReactNode {
   // close the modal when the escape key is pressed
   useEffect(() => {
-    const handleEscapeKey = (e: KeyboardEvent) => {
+    const handleEscapeKey = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') onClose();
     };
     if (closeOnEscapeKey) document.addEventListener('keydown', handleEscapeKey);
     return () => {
-      if (closeOnEscapeKey)
+      if (closeOnEscapeKey) {
         document.removeEventListener('keydown', handleEscapeKey);
+      }
     };
-  }, [onClose]);
+  }, [closeOnEscapeKey, onClose]);
 
   if (!isOpen) {
     return null;
-  } else {
-    return (
-      <div className="fixed z-10 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen p-2 sm:p-4">
-          {/*Modal overlay*/}
-          <div
-            className="fixed inset-0"
-            onClick={closeOnOverlayClick ? onClose : undefined}
-          >
-            <div className="absolute inset-0 bg-gray-500 opacity-75" />
-          </div>
-          {/*Modal body*/}
-          <div
-            className={`relative z-20 bg-white p-4 sm:p-6 rounded shadow-lg ${maxWidths[width]} w-full`}
-          >
-            {withCloseButton && (
-              <button
-                className="absolute top-1 right-1 px-1 text-gray-500 hover:text-gray-700"
-                onClick={onClose}
-              >
-                <FontAwesomeIcon icon={faXmark} size="lg" />
-              </button>
-            )}
-            {children}
-          </div>
+  }
+  return (
+    <div className="fixed z-10 inset-0 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen p-2 sm:p-4">
+        <div
+          role="presentation"
+          className="fixed inset-0"
+          onClick={closeOnOverlayClick ? onClose : undefined}
+        >
+          <div className="absolute inset-0 bg-gray-500 opacity-75" />
+        </div>
+        <div
+          className={`relative z-20 bg-white p-4 sm:p-6 rounded shadow-lg ${maxWidths[width]} w-full`}
+        >
+          {withCloseButton && (
+            <button
+              type="button"
+              className="absolute top-1 right-1 px-1 text-gray-500 hover:text-gray-700"
+              onClick={onClose}
+            >
+              <FontAwesomeIcon icon={faXmark} size="lg" />
+            </button>
+          )}
+          {children}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
