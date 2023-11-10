@@ -23,7 +23,7 @@ export class BookRepository extends Repository<Book> {
    */
   public async getAllPlain(): Promise<PlainBookRepositoryOutput[]> {
     const books = await this.find({
-      relations: { bookGenres: { genre: true } },
+      relations: { author: true, bookGenres: { genre: true } },
     });
 
     return books.map(adaptBookEntityToPlainBookModel);
@@ -36,12 +36,62 @@ export class BookRepository extends Repository<Book> {
    * @throws 404: book with this ID was not found
    */
   public async getById(id: BookId): Promise<BookRepositoryOutput> {
-    const book = await this.findOne({ where: { id } });
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
 
     return adaptBookEntityToBookModel(book);
+  }
+
+  /**
+   * Create a book
+   * @param title Book's title
+   * @param authorId Book's author ID
+   * @returns Created book
+   */
+  public async createBook(title, authorId): Promise<BookRepositoryOutput> {
+    const book = new Book();
+    book.name = title;
+    book.author = authorId;
+    book.writtenOn = new Date();
+    book.bookGenres = [];
+
+    return adaptBookEntityToBookModel(await this.save(book));
+  }
+
+  /**
+   * Update a book
+   * @param id Book's ID
+   * @param title Book's title
+   * @param authorId Book's author ID
+   * @returns Updated book
+   */
+  public async updateBook(
+    id: BookId,
+    title: string,
+    authorId: string,
+  ): Promise<BookRepositoryOutput> {
+    // Change the book's title
+    await this.update(id, { name: title, author: { id: authorId } });
+
+    return this.getById(id);
+  }
+
+  /**
+   * Delete a book
+   * @param id Book's ID
+   * @returns Deleted book
+   */
+  public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
+    const book = await this.getById(id);
+
+    await this.delete(id);
+
+    return book;
   }
 }
