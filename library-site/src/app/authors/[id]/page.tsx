@@ -1,75 +1,71 @@
 'use client';
 
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import axios from 'axios';
-import { PlainAuthorModel } from '../../../models/author.model';
+import { useDisclosure, useGetAuthor } from '@/hooks';
+import { Button } from '@/components/button';
+import { DeleteAuthorModal } from '@/app/authors/[id]/delete-author-modal';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const AuthorDetailsPage: FC = () => {
-  const { id } = useParams();
+  const { id: authorId } = useParams();
+  const {
+    isOpen: isDeteleModalOpen,
+    onOpen: openDeleteModal,
+    onClose: closeDeleteModal,
+  } = useDisclosure();
 
-  // Initialisation de l'état des auteurs à un tableau vide
-  const [author, setAuthors] = useState<PlainAuthorModel>();
+  const { author, error, load } = useGetAuthor();
+  useEffect(() => load(authorId as string), []);
 
-  // Initialisation de l'état de chargement à false
-  const [loading, setLoading] = useState(false);
-
-  // Initialisation de l'état d'erreur à null
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Définir l'état de chargement à true avant de faire l'appel à l'API
-    setLoading(true);
-
-    axios
-      .get(`http://localhost:3001/authors/${id}`)
-      .then((response) => {
-        // Mettre à jour l'état des auteurs avec les données récupérées
-        setAuthors(response.data);
-
-        // Définir l'état de chargement à false après la récupération des données
-        setLoading(false);
-      })
-      .catch((e) => {
-        // Gestion des erreurs
-        setError(e);
-
-        // Définir l'état de chargement à false en cas d'erreur
-        setLoading(false);
-      });
-  }, []); // le tableau vide signifie que useEffect
-  // ne s'exécutera qu'une fois après le premier rendu
-
-  const renderContent = (): ReactElement => {
-    if (loading) {
-      return <p>Chargement...</p>;
-    }
-
-    if (error) {
-      return <p>{`Erreur : ${error}`}</p>;
-    }
-
-    if (!author) {
-      return <p>Aucun auteur trouvé</p>;
-    }
-
+  if (error) {
+    return <p>{`Erreur : ${error.message}`}</p>;
+  } else if (!author) {
     return (
-      <div>
-        <h1>
-          Auteur :
-          {`${author.firstName} 
-        ${author.lastName}`}
-        </h1>
-        <img
-          src={author.photoUrl}
-          alt={`${author.firstName} ${author.lastName}`}
-          className="w-72 h-72 rounded-full object-cover"
-        />
-      </div>
+      <h1 className="text-3xl font-bold mb-4 mt-10 text-center">
+        Chargement...
+      </h1>
     );
-  };
-
-  return <div>{renderContent()}</div>;
+  } else
+    return (
+      <>
+        <h1 className="text-3xl font-bold mb-8 mt-10 text-center">
+          {author.firstName} {author.lastName}
+        </h1>
+        <div className="flex justify-center flex-wrap xs:gap-10">
+          <img
+            src={`https://${author.photoUrl}`}
+            alt={`Photo de ${author.firstName} ${author.lastName}`}
+            className="w-48 h-48 sm:w-72 sm:h-72 rounded-full object-cover"
+          />
+          <div>
+            <h2 className="text-xl font-bold mb-4 mt-5">Livres</h2>
+            {author.books?.length ? (
+              <ul className="list-disc list-inside">
+                {author.books.map((book) => (
+                  <li key={book.id}>{book.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Aucun livre n'a été trouvé pour cet auteur.</p>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-center mt-10">
+          <Button onClick={openDeleteModal} color="red" variant="outline">
+            <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
+            Supprimer l'auteur
+          </Button>
+          <DeleteAuthorModal
+            authorId={authorId as string}
+            authorName={`${author.firstName} ${author.lastName}`}
+            isOpen={isDeteleModalOpen}
+            onClose={closeDeleteModal}
+          />
+        </div>
+      </>
+    );
 };
 
 export default AuthorDetailsPage;
