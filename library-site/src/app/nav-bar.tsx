@@ -12,7 +12,6 @@ export function NavBar(): ReactElement {
     { text: 'Accueil', path: '/' },
     { text: 'Livres', path: '/books' },
     { text: 'Auteurs', path: '/authors' },
-    { text: 'Utilisateurs', path: '/users' },
   ];
 
   return (
