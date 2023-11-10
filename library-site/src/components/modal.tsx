@@ -22,13 +22,27 @@ interface ModalProps {
     | '7xl';
 }
 
+const maxWidths = {
+  xs: 'max-w-xs',
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
+  '3xl': 'max-w-3xl',
+  '4xl': 'max-w-4xl',
+  '5xl': 'max-w-5xl',
+  '6xl': 'max-w-6xl',
+  '7xl': 'max-w-7xl',
+};
+
 export function Modal({
   isOpen,
   onClose,
   children,
   withCloseButton = true,
   closeOnOverlayClick = true,
-  width = 'md',
+  width = 'lg',
 }: ModalProps) {
   if (!isOpen) {
     return null;
@@ -45,7 +59,7 @@ export function Modal({
           </div>
           {/*Modal body*/}
           <div
-            className={`relative z-20 bg-white p-4 sm:p-6 rounded shadow-lg max-w-${width} w-full`}
+            className={`relative z-20 bg-white p-4 sm:p-6 rounded shadow-lg ${maxWidths[width]} w-full`}
           >
             {withCloseButton && (
               <button
