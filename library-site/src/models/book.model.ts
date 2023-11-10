@@ -7,5 +7,5 @@ export type PlainBookModel = {
     firstName: string;
     lastName: string;
     photoUrl: string;
-  }
+  };
 };

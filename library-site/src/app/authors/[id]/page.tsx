@@ -3,10 +3,11 @@
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useDisclosure, useGetAuthor } from '@/hooks';
 import { Button } from '@/components/button';
 import { DeleteAuthorModal } from '@/app/authors/[id]/delete-author-modal';
+import { CreateBookModal } from '@/app/authors/[id]/create-book-modal';
 
 const AuthorDetailsPage: FC = () => {
   const { id: authorId } = useParams();
@@ -14,6 +15,12 @@ const AuthorDetailsPage: FC = () => {
     isOpen: isDeteleModalOpen,
     onOpen: openDeleteModal,
     onClose: closeDeleteModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCreateBookModalOpen,
+    onOpen: openCreateBookModal,
+    onClose: closeCreateBookModal,
   } = useDisclosure();
 
   const { author, error, load } = useGetAuthor();
@@ -57,7 +64,7 @@ const AuthorDetailsPage: FC = () => {
           )}
         </div>
       </div>
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center mt-10 gap-5">
         <Button onClick={openDeleteModal} color="red" variant="outline">
           <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
           Supprimer l&apos;auteur
@@ -67,6 +74,16 @@ const AuthorDetailsPage: FC = () => {
           authorName={`${author.firstName} ${author.lastName}`}
           isOpen={isDeteleModalOpen}
           onClose={closeDeleteModal}
+        />
+        <Button onClick={openCreateBookModal} color="primary">
+          <FontAwesomeIcon icon={faPlus} className="mr-2" />
+          Ajouter un livre
+        </Button>
+        <CreateBookModal
+          authorId={authorId as string}
+          isOpen={isCreateBookModalOpen}
+          onClose={closeCreateBookModal}
+          refreshAuthor={(): void => load(authorId as string)}
         />
       </div>
     </>
