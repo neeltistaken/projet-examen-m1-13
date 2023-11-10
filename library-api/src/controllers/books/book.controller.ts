@@ -3,16 +3,17 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
 import {
-  ApiAcceptedResponse,
   ApiOperation,
   ApiParam,
   ApiNotFoundResponse,
   ApiTags,
+  ApiResponse,
 } from '@nestjs/swagger';
 import {
   BookPresenter,
@@ -28,7 +29,7 @@ export class BookController {
 
   @Get('/')
   @ApiOperation({ summary: 'Get all books' })
-  @ApiAcceptedResponse({ type: PlainBookPresenter, isArray: true })
+  @ApiResponse({ status: 200, type: PlainBookPresenter, isArray: true })
   public async getAll(): Promise<PlainBookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
 
@@ -37,7 +38,7 @@ export class BookController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Get a book by its ID' })
-  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiResponse({ status: 200, type: BookPresenter })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiNotFoundResponse({ description: 'Book not found' })
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
@@ -48,7 +49,7 @@ export class BookController {
 
   @Post('/')
   @ApiOperation({ summary: 'Create a book' })
-  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiResponse({ status: 200, type: BookPresenter })
   @ApiParam({ name: 'title', type: 'string' })
   @ApiParam({ name: 'authorId', type: 'string' })
   public async create(@Query() query): Promise<BookPresenter> {
@@ -60,7 +61,8 @@ export class BookController {
 
   @Put('/:id/')
   @ApiOperation({ summary: 'Update a book' })
-  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiResponse({ status: 200, type: BookPresenter })
+  @ApiResponse({ status: 404, description: "Book isn't found" })
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'title', type: 'string' })
   @ApiParam({ name: 'authorId', type: 'string' })
@@ -76,10 +78,43 @@ export class BookController {
 
   @Delete('/:id/')
   @ApiOperation({ summary: 'Delete a book' })
-  @ApiAcceptedResponse({ type: BookPresenter })
+  @ApiResponse({ status: 200, type: BookPresenter })
+  @ApiResponse({ status: 404, description: "Book isn't found" })
   @ApiParam({ name: 'id', type: 'string' })
   public async delete(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.delete(id);
+
+    return BookPresenter.from(book);
+  }
+
+  @Patch('/:id/genre')
+  @ApiOperation({ summary: 'Add a book genre' })
+  @ApiResponse({ status: 200, type: BookPresenter })
+  @ApiResponse({ status: 404, description: "Genre or book isn't found" })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'genreId', type: 'string' })
+  public async addGenre(
+    @Param('id') id: BookId,
+    @Query() query,
+  ): Promise<BookPresenter> {
+    const { genreId } = query;
+    const book = await this.bookUseCases.addGenre(id, genreId);
+
+    return BookPresenter.from(book);
+  }
+
+  @Delete('/:id/genre')
+  @ApiOperation({ summary: 'Remove a book genre' })
+  @ApiResponse({ status: 200, type: BookPresenter })
+  @ApiResponse({ status: 404, description: "Genre or book isn't found" })
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'genreId', type: 'string' })
+  public async removeGenre(
+    @Param('id') id: BookId,
+    @Query() query,
+  ): Promise<BookPresenter> {
+    const { genreId } = query;
+    const book = await this.bookUseCases.removeGenre(id, genreId);
 
     return BookPresenter.from(book);
   }
