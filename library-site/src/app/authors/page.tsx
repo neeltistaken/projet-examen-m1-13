@@ -21,7 +21,7 @@ const AuthorsPage: FC = () => {
 
   const { authors, error, load } = useListAuthors();
 
-  useEffect(() => load(), [load]);
+  useEffect(() => load(), []);
 
   // filter authors by search term on each search term change
   useEffect(() => {
