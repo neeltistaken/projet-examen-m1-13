@@ -1,4 +1,5 @@
 import { TailwindcssColors } from '@/types/tailwindcss-colors';
+import { ReactElement } from 'react';
 
 // we can not build class names dynamically because of the way tailwindcss works
 // see https://tailwindcss.com/docs/content-configuration#dynamic-class-names
@@ -65,13 +66,15 @@ const sizes = {
   lg: 'px-3 py-1.5 text-lg',
 };
 
+type childrenNode = ReactElement | string | number;
+
 interface ButtonProps {
   color?: TailwindcssColors;
   variant?: 'solid' | 'outline';
   size?: 'xs' | 'sm' | 'md' | 'lg';
   pill?: boolean;
   onClick?: () => void;
-  children: string;
+  children: childrenNode | childrenNode[];
 }
 
 export function Button({

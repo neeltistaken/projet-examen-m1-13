@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 import { PlainAuthorModel } from '@/models';
 
@@ -40,4 +40,11 @@ export const useGetAuthor = (): UseGetAuthorProvider => {
   };
 
   return { author, error, load: fetchAuthor };
+};
+
+export const useAuthorActions = () => {
+  const deleteAuthor = (authorId: string) =>
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/authors/${authorId}`);
+
+  return { deleteAuthor };
 };

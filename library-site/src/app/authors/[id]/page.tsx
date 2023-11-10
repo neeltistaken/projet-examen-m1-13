@@ -2,10 +2,19 @@
 
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useGetAuthor } from '@/hooks';
+import { useDisclosure, useGetAuthor } from '@/hooks';
+import { Button } from '@/components/button';
+import { DeleteAuthorModal } from '@/app/authors/[id]/delete-author-modal';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const AuthorDetailsPage: FC = () => {
   const { id: authorId } = useParams();
+  const {
+    isOpen: isDeteleModalOpen,
+    onOpen: openDeleteModal,
+    onClose: closeDeleteModal,
+  } = useDisclosure();
 
   const { author, error, load } = useGetAuthor();
   useEffect(() => load(authorId as string), []);
@@ -42,6 +51,18 @@ const AuthorDetailsPage: FC = () => {
               <p>Aucun livre n'a été trouvé pour cet auteur.</p>
             )}
           </div>
+        </div>
+        <div className="flex justify-center mt-10">
+          <Button onClick={openDeleteModal} color="red" variant="outline">
+            <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
+            Supprimer l'auteur
+          </Button>
+          <DeleteAuthorModal
+            authorId={authorId as string}
+            authorName={`${author.firstName} ${author.lastName}`}
+            isOpen={isDeteleModalOpen}
+            onClose={closeDeleteModal}
+          />
         </div>
       </>
     );
