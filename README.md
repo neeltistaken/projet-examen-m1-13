@@ -1,4 +1,4 @@
-# Biblio'tech
+# Biblio'tech - Groupe 13
 
 Biblio'tech is a project designed to manage libraries using a full remote API and a React-based website. This README provides information on how to install, use, and contribute to the project.
 
