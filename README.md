@@ -1,6 +1,13 @@
 # Biblio'tech - Groupe 13
 
-Biblio'tech is a project designed to manage libraries using a full remote API and a React-based website. This README provides information on how to install, use, and contribute to the project.
+Biblio'tech is a dynamic website that offers an interactive collection of books and authors. Users can manually add authors through a user-friendly interface and view the number of books per author. Clicking on an author displays the details of the associated books, with the option to delete that author. Although a user management system has not been implemented due to time constraints, Biblio'tech provides a rich and intuitive user experience for browsing and managing literary data.
+
+## Technologies Used
+
+-React
+-Next.js
+-Tailwind CSS
+- Swagger API for API documentation
 
 ## Installation
 
